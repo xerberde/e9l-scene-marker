@@ -1,0 +1,52 @@
+{
+  "id": "e9l-scene-marker",
+  "title": "e9l DSA5/TDE5 Scene Marker",
+  "description": "Ein Modul zum Setzen von interaktiven Markern in Foundry VTT Szenen",
+  "version": "13.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12",
+    "maximum": "12"
+  },
+  "authors": [
+    {
+      "name": "e9l",
+      "discord": "xerberde"
+    }
+  ],
+  "esmodules": [
+    "scripts/template-loader.js",
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/base.css",
+    "styles/animations.css",
+    "styles/markers.css",
+    "styles/menus.css",
+    "styles/dialogs.css",
+    "styles/chat.css"
+  ],
+  "languages": [
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json"
+    }
+  ],
+  "url": "https://github.com/xerberde/e9l-scene-marker",
+  "manifest": "https://raw.githubusercontent.com/xerberde/e9l-scene-marker/main/module.json",
+  "download": "https://github.com/xerberde/e9l-scene-marker/archive/refs/heads/main.zip",
+  "bugs": "https://github.com/xerberde/e9l-scene-marker/issues",
+  "changelog": "https://github.com/xerberde/e9l-scene-marker/releases",
+  "readme": "https://github.com/xerberde/e9l-scene-marker/blob/main/README.md",
+  "license": "MIT",
+  "keywords": [
+    "scene",
+    "marker",
+    "dsa5",
+    "tde5",
+    "interactive",
+    "gm-tools",
+    "templates"
+  ]
+}

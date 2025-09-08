@@ -1,0 +1,31 @@
+<div class="image-config-form">
+    <div class="form-group">
+        <label for="image-path">Bild-Pfad:</label>
+        <div style="display: flex; gap: 5px;">
+            <input type="text" 
+                   id="image-path" 
+                   value="{{imagePath}}" 
+                   placeholder="Pfad zum Bild..." 
+                   style="flex: 1;">
+            <button type="button" 
+                    id="image-browse" 
+                    class="file-picker" 
+                    data-type="imagevideo" 
+                    data-target="#image-path"
+                    title="Bild auswählen">
+                <i class="fas fa-file-import"></i>
+            </button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" 
+                   id="show-as-popup" 
+                   {{showAsPopupChecked}}>
+            Als Popup anzeigen (sonst im Chat)
+        </label>
+    </div>
+    <div class="form-info" style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 3px;">
+        <small><i class="fas fa-info-circle"></i> Das Bild wird allen Spielern angezeigt.</small>
+    </div>
+</div>

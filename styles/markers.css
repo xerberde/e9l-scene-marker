@@ -1,0 +1,80 @@
+/**
+ * e9l DSA5/TDE5 Scene Marker - Marker Styles
+ * Version: 12.0
+ * Description: Styles für die Marker-Elemente
+ */
+
+/* DOM Marker Styles - Dunkles Quadrat mit abgerundeten Ecken */
+.e9l-scene-marker-dom {
+    position: absolute;
+    pointer-events: all !important;
+    will-change: transform;
+    cursor: pointer;
+    opacity: 0.6;  /* 40% Transparenz */
+    transition: opacity var(--e9l-transition-normal);
+}
+
+.e9l-scene-marker-dom .marker-box {
+    width: 36px;
+    height: 36px;
+    background: var(--e9l-bg-primary);
+    border: 1px solid var(--e9l-border-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        var(--e9l-shadow-sm),
+        var(--e9l-shadow-inset);
+    transition: all var(--e9l-transition-normal);
+    pointer-events: all !important;
+}
+
+.e9l-scene-marker-dom .marker-box i {
+    font-size: 18px;
+    color: var(--e9l-text-secondary);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+    transition: all var(--e9l-transition-normal);
+}
+
+/* Marker Label - Zeigt sich beim Hovern */
+.e9l-scene-marker-dom .marker-label {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--e9l-bg-primary);
+    border: 1px solid var(--e9l-border-hover);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-family: "Signika", sans-serif;
+    color: var(--e9l-text-primary);
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 
+        var(--e9l-shadow-md),
+        var(--e9l-shadow-inset);
+    z-index: 31;
+    animation: fadeIn var(--e9l-transition-normal);
+}
+
+/* Hover-Effekt - dezent */
+.e9l-scene-marker-dom:hover .marker-box,
+.e9l-scene-marker-dom.hover .marker-box {
+    background: var(--e9l-bg-secondary);
+    border-color: var(--e9l-border-hover);
+    box-shadow: 
+        var(--e9l-shadow-md),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.e9l-scene-marker-dom:hover,
+.e9l-scene-marker-dom.hover {
+    opacity: 1;  /* Volle Sichtbarkeit bei Hover */
+}
+
+.e9l-scene-marker-dom:hover .marker-box i,
+.e9l-scene-marker-dom.hover .marker-box i {
+    color: var(--e9l-text-primary);
+}

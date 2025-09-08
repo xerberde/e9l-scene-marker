@@ -1,0 +1,54 @@
+{
+  "E9L": {
+    "SceneMarker": {
+      "Title": "E9L Scene Marker",
+      "ControlTitle": "Scene Marker setzen",
+      "ControlHint": "Klicken Sie, um Marker in der Szene zu platzieren",
+      "ModeActivated": "Marker-Modus aktiviert. Linksklick zum Platzieren, Rechtsklick zum Beenden.",
+      "ModeDeactivated": "Marker-Modus deaktiviert.",
+      "MarkerDeleted": "Marker gelöscht",
+      "ScriptExecuted": "Skript erfolgreich ausgeführt",
+      "ScriptError": "Fehler beim Ausführen des Skripts",
+      
+      "Menu": {
+        "RequestCheck": "Probe anfordern",
+        "RequestGroupCheck": "Gruppenprobe anfordern",
+        "ExecuteScript": "Skript ausführen",
+        "ToggleDarkness": "Dunkelheit umschalten",
+        "DeleteMarker": "Marker löschen"
+      },
+      
+      "Dialog": {
+        "ExecuteScript": "Skript ausführen",
+        "ScriptLabel": "JavaScript Code:",
+        "Execute": "Ausführen",
+        "Cancel": "Abbrechen"
+      },
+      
+      "Chat": {
+        "CheckRequested": "Eine Talentprobe wurde angefordert",
+        "GroupCheckRequested": "Alle Helden werden aufgefordert eine Probe abzulegen"
+      },
+      
+      "Notifications": {
+        "DarknessEnabled": "Dunkelheit aktiviert",
+        "DarknessDisabled": "Dunkelheit deaktiviert",
+        "MarkerCreated": "Marker erstellt",
+        "MarkerUpdated": "Marker aktualisiert"
+      },
+      
+      "Settings": {
+        "MarkerColor": "Standard Marker-Farbe",
+        "MarkerColorHint": "Die Standardfarbe für neue Marker (Hellblau: #4FC3F7)",
+        "MarkerIcon": "Standard Marker-Icon",
+        "MarkerIconHint": "Das FontAwesome Icon für neue Marker (z.B. fa-light fa-wand-magic-sparkles)",
+        "MarkerSize": "Marker-Größe",
+        "MarkerSizeHint": "Die Größe der Marker-Boxen in Pixeln",
+        "EnableAnimations": "Animationen aktivieren",
+        "EnableAnimationsHint": "Aktiviert visuelle Effekte und Animationen für Marker",
+        "AutoSave": "Automatisch speichern",
+        "AutoSaveHint": "Marker automatisch in der Szene speichern"
+      }
+    }
+  }
+}

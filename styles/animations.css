@@ -1,0 +1,147 @@
+/**
+ * e9l DSA5/TDE5 Scene Marker - Animation Styles
+ * Version: 12.0
+ * Description: Animationen und visuelle Effekte
+ */
+
+/* Basis-Animation: Fade In */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Pulse-Animation für aktive Marker */
+@keyframes pulse {
+    0% {
+        box-shadow: 
+            0 0 0 0 rgba(255, 255, 255, 0.4),
+            var(--e9l-shadow-sm);
+    }
+    70% {
+        box-shadow: 
+            0 0 0 10px rgba(255, 255, 255, 0),
+            var(--e9l-shadow-sm);
+    }
+    100% {
+        box-shadow: 
+            0 0 0 0 rgba(255, 255, 255, 0),
+            var(--e9l-shadow-sm);
+    }
+}
+
+/* Glow-Animation für Hover */
+@keyframes glow {
+    from {
+        box-shadow: 
+            0 0 10px -5px rgba(255, 255, 255, 0.3),
+            var(--e9l-shadow-md);
+    }
+    to {
+        box-shadow: 
+            0 0 20px -5px rgba(255, 255, 255, 0.5),
+            var(--e9l-shadow-md);
+    }
+}
+
+/* Slide-In Animation für Menüs */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Shake-Animation für Fehler */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* Rotate-Animation für Loading */
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Float-Animation für schwebende Elemente */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Optionale Animation-Klassen */
+.e9l-animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+.e9l-animate-glow {
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+.e9l-animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+.e9l-animate-shake {
+    animation: shake 0.5s;
+}
+
+.e9l-animate-rotate {
+    animation: rotate 1s linear infinite;
+}
+
+/* Smooth Transitions für interaktive Elemente */
+.e9l-transition-smooth {
+    transition: all var(--e9l-transition-normal);
+}
+
+.e9l-transition-fast {
+    transition: all var(--e9l-transition-fast);
+}
+
+.e9l-transition-slow {
+    transition: all var(--e9l-transition-slow);
+}
+
+/* Hover-Effekt mit Lift */
+.e9l-hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Active-State Animation */
+.e9l-active-state {
+    animation: pulse 1.5s infinite;
+}
+
+/* Loading-Spinner */
+.e9l-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.e9l-loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: rotate 0.8s linear infinite;
+}

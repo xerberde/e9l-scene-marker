@@ -1,0 +1,89 @@
+/**
+ * e9l DSA5/TDE5 Scene Marker - Dialog Styles
+ * Version: 12.0
+ * Description: Styles für Dialoge und Buttons
+ */
+
+/* ============================================ */
+/* SCRIPT-DIALOG BUTTONS - HORIZONTAL LAYOUT   */
+/* ============================================ */
+
+/* Script-Dialog - Nutze Foundry Default Buttons */
+.e9l-script-dialog .dialog-buttons {
+    /* Nur Layout anpassen, keine Style-Overrides */
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 4px !important;
+}
+
+/* Reihenfolge der Buttons */
+.e9l-script-dialog .dialog-buttons button[data-button="validate"] { 
+    order: 1;
+}
+
+.e9l-script-dialog .dialog-buttons button[data-button="execute"] { 
+    order: 2;
+}
+
+.e9l-script-dialog .dialog-buttons button[data-button="save"] { 
+    order: 3;
+}
+
+.e9l-script-dialog .dialog-buttons button[data-button="cancel"] { 
+    order: 4;
+}
+
+/* Fallback mit maximaler Spezifität */
+.app.dialog.e9l-script-dialog .dialog-content + .dialog-buttons,
+body .e9l-script-dialog .dialog-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+}
+
+/* ============================================ */
+/* KONFIGURATIONSDIALOGE                       */
+/* ============================================ */
+
+/* Dunkelheits-Konfiguration Form Styling */
+.darkness-config-form .form-group {
+    margin-bottom: var(--e9l-spacing-lg) !important;
+    display: flex;
+    align-items: center;
+    gap: var(--e9l-spacing-md);
+}
+
+.darkness-config-form label {
+    flex: 0 0 180px;
+    text-align: right;
+    padding-right: var(--e9l-spacing-md);
+}
+
+.darkness-config-form input[type="number"] {
+    flex: 0 0 100px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    color: var(--e9l-text-primary);
+}
+
+/* Bild-Konfiguration Dialog */
+.image-config-form .form-group {
+    margin-bottom: var(--e9l-spacing-md);
+}
+
+.image-config-form .file-picker {
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    color: var(--e9l-text-primary);
+    cursor: pointer;
+    transition: all var(--e9l-transition-normal);
+}
+
+.image-config-form .file-picker:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+}
