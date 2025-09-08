@@ -1,0 +1,102 @@
+/**
+ * e9l DSA5/TDE5 Scene Marker - Menu Styles
+ * Version: 12.0
+ * Description: Styles für Kontextmenüs
+ */
+
+/* Kontextmenü Styles - Dark Minimal */
+.e9l-marker-menu {
+    position: fixed;
+    z-index: 100000;
+    min-width: 220px;
+    background: var(--e9l-bg-primary);
+    border: 1px solid var(--e9l-border-color);
+    border-radius: 4px;
+    box-shadow: 
+        var(--e9l-shadow-lg),
+        0 0 1px rgba(255, 255, 255, 0.05);
+    padding: 0;
+    animation: fadeIn var(--e9l-transition-fast);
+}
+
+/* Name-Input im Kontextmenü */
+.e9l-marker-menu .marker-name-input {
+    padding: var(--e9l-spacing-sm);
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--e9l-border-color);
+}
+
+.e9l-marker-menu .marker-name-field {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    color: var(--e9l-text-primary);
+    font-size: 12px;
+    font-family: "Signika", sans-serif;
+    transition: all var(--e9l-transition-normal);
+    outline: none;
+}
+
+.e9l-marker-menu .marker-name-field:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+}
+
+.e9l-marker-menu .marker-name-field::placeholder {
+    color: var(--e9l-text-muted);
+}
+
+.e9l-marker-menu .context-divider {
+    height: 1px;
+    background: var(--e9l-border-color);
+    margin: 0;
+}
+
+/* Menü-Items */
+.e9l-marker-menu .context-items {
+    list-style: none;
+    margin: 0;
+    padding: var(--e9l-spacing-xs) 0;
+}
+
+.e9l-marker-menu .context-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    color: var(--e9l-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--e9l-spacing-sm);
+    font-size: 12px;
+    font-family: "Signika", sans-serif;
+    transition: all var(--e9l-transition-fast);
+}
+
+.e9l-marker-menu .context-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--e9l-text-primary);
+}
+
+.e9l-marker-menu .context-item i {
+    width: 14px;
+    text-align: center;
+    color: rgba(255, 100, 100, 0.8);
+    font-size: 11px;
+}
+
+.e9l-marker-menu .context-item.divider {
+    height: 1px;
+    background: var(--e9l-border-color);
+    padding: 0;
+    margin: var(--e9l-spacing-xs) 0;
+    pointer-events: none;
+}
+
+/* Status-Icons */
+.e9l-marker-menu .context-item i.fa-check-circle {
+    color: #4CAF50;
+    margin-left: auto;
+    font-size: 10px;
+}

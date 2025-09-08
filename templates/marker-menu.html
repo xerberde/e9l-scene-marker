@@ -1,0 +1,46 @@
+<div class="marker-name-input">
+    <input type="text" 
+           class="marker-name-field" 
+           value="{{markerName}}" 
+           placeholder="Marker-Name..."
+           maxlength="50"
+           data-marker-id="{{markerId}}">
+</div>
+<div class="context-divider"></div>
+<ul class="context-items">
+    <li class="context-item" data-action="request-check">
+        <i class="fas fa-dice-d20"></i> Talentprobe anfordern {{talentStatus}}
+    </li>
+    <li class="context-item" data-action="configure-talent">
+        <i class="fas fa-cog"></i> Talentprobe konfigurieren
+    </li>
+    <li class="context-item divider"></li>
+    <li class="context-item" data-action="request-group-check">
+        <i class="fas fa-users"></i> Sammelprobe anfordern
+    </li>
+    <li class="context-item divider"></li>
+    <li class="context-item" data-action="execute-script">
+        <i class="fas fa-play"></i> Skript ausführen {{scriptStatus}}
+    </li>
+    <li class="context-item" data-action="configure-script">
+        <i class="fas fa-code"></i> Skript konfigurieren
+    </li>
+    <li class="context-item divider"></li>
+    <li class="context-item" data-action="show-image">
+        <i class="fas fa-image"></i> Bild zeigen {{imageStatus}}
+    </li>
+    <li class="context-item" data-action="configure-image">
+        <i class="fas fa-cog"></i> Bild konfigurieren
+    </li>
+    <li class="context-item divider"></li>
+    <li class="context-item" data-action="toggle-darkness">
+        <i class="fas fa-moon"></i> Dunkelheit umschalten {{darknessInfo}}
+    </li>
+    <li class="context-item" data-action="configure-darkness">
+        <i class="fas fa-cog"></i> Dunkelheit konfigurieren
+    </li>
+    <li class="context-item divider"></li>
+    <li class="context-item" data-action="delete-marker">
+        <i class="fas fa-trash"></i> Marker löschen
+    </li>
+</ul>

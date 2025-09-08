@@ -1,0 +1,68 @@
+/**
+ * e9l DSA5/TDE5 Scene Marker - Base Styles
+ * Version: 12.0
+ * Description: CSS-Variablen und grundlegende Styles
+ */
+
+:root {
+    /* Farben - Dark Theme */
+    --e9l-bg-primary: linear-gradient(135deg, #1a1a1d 0%, #0d0d0f 100%);
+    --e9l-bg-secondary: linear-gradient(135deg, #202024 0%, #101012 100%);
+    --e9l-border-color: rgba(255, 255, 255, 0.1);
+    --e9l-border-hover: rgba(255, 255, 255, 0.2);
+    --e9l-text-primary: rgba(255, 255, 255, 0.9);
+    --e9l-text-secondary: rgba(255, 255, 255, 0.7);
+    --e9l-text-muted: rgba(255, 255, 255, 0.4);
+    
+    /* Button-Farben */
+    --e9l-btn-validate: linear-gradient(135deg, #2a3f5f 0%, #1a2f4f 100%);
+    --e9l-btn-execute: linear-gradient(135deg, #2f5f2f 0%, #1f4f1f 100%);
+    --e9l-btn-save: linear-gradient(135deg, #5f4f2f 0%, #4f3f1f 100%);
+    --e9l-btn-cancel: linear-gradient(135deg, #5f2f2f 0%, #4f1f1f 100%);
+    
+    /* Schatten */
+    --e9l-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.8);
+    --e9l-shadow-md: 0 3px 6px rgba(0, 0, 0, 0.9);
+    --e9l-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.9);
+    --e9l-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    
+    /* Abstände */
+    --e9l-spacing-xs: 4px;
+    --e9l-spacing-sm: 8px;
+    --e9l-spacing-md: 12px;
+    --e9l-spacing-lg: 16px;
+    
+    /* Übergangseffekte */
+    --e9l-transition-fast: 0.15s ease;
+    --e9l-transition-normal: 0.2s ease;
+    --e9l-transition-slow: 0.3s ease;
+}
+
+/* Marker Overlay Container */
+#e9l-marker-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 30;
+}
+
+/* Scene Control Button anpassen wenn aktiv */
+.scene-control[data-control="e9l-markers"] .control-tool[data-tool="place-marker"].active,
+.control-tool[data-tool="place-marker"].active {
+    color: var(--e9l-text-primary) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.scene-control[data-control="e9l-markers"] .control-tool[data-tool="place-marker"]:hover,
+.control-tool[data-tool="place-marker"]:hover {
+    color: rgba(255, 255, 255, 1) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Crosshair Cursor */
+body[style*="cursor: crosshair"] {
+    cursor: crosshair !important;
+}

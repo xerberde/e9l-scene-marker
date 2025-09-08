@@ -1,0 +1,25 @@
+<div class="darkness-config-form">
+    <div class="form-group">
+        <label for="darkness-low">Helligkeit (Tag/Hell):</label>
+        <input type="number" 
+               id="darkness-low" 
+               value="{{lowValue}}" 
+               min="0" 
+               max="1" 
+               step="0.1" 
+               style="width: 100px;">
+    </div>
+    <div class="form-group">
+        <label for="darkness-high">Dunkelheit (Nacht/Dunkel):</label>
+        <input type="number" 
+               id="darkness-high" 
+               value="{{highValue}}" 
+               min="0" 
+               max="1" 
+               step="0.1" 
+               style="width: 100px;">
+    </div>
+    <div class="form-info">
+        <small><i class="fas fa-info-circle"></i> Werte zwischen 0 (hell) und 1 (dunkel)</small>
+    </div>
+</div>
