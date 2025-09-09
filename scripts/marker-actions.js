@@ -1,14 +1,16 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 12.0
+ * Version: 13.1.0
  * Date: 2024
- * Description: Marker Actions - Aktionslogik für Marker
- * Changes: Label über Code-Editor entfernt
+ * Description: Marker Actions - Aktionslogik für Marker mit Template-Support
  */
+
+import { TemplateLoader } from './template-loader.js';
 
 export class MarkerActions {
     constructor(parent) {
         this.parent = parent;
+        this.version = parent.version || '13.1.0';
     }
 
     async handleMarkerAction(action, markerData) {
@@ -23,13 +25,17 @@ export class MarkerActions {
                 this.requestCheck(markerData);
                 break;
             case 'configure-talent':
-                this.configureTalent(markerData);
+                // TODO: Implementierung ausstehend
+                ui.notifications.warn("Talentprobe-Konfiguration in Entwicklung");
                 break;
             case 'request-group-check':
                 this.requestGroupCheck(markerData);
                 break;
             case 'execute-script':
                 this.executeScript(markerData);
+                break;
+            case 'configure-script':
+                this.configureScript(markerData);
                 break;
             case 'toggle-darkness':
                 this.toggleDarkness(markerData);
@@ -70,7 +76,7 @@ export class MarkerActions {
             localMarker.data.customName = newName;
         }
         
-        console.log(`[V12.0] Marker ${markerId} umbenannt zu: ${newName || 'default'}`);
+        console.log(`[V${this.version}] Marker ${markerId} umbenannt zu: ${newName || 'default'}`);
     }
 
     async saveMarkerScript(markerId, script) {
@@ -94,7 +100,7 @@ export class MarkerActions {
             localMarker.data.customScript = script;
         }
         
-        console.log(`[V12.0] Skript für Marker ${markerId} gespeichert`);
+        console.log(`[V${this.version}] Skript für Marker ${markerId} gespeichert`);
     }
 
     async saveDarknessConfig(markerId, lowValue, highValue) {
@@ -121,7 +127,7 @@ export class MarkerActions {
             localMarker.data.darknessConfig = markers[markerId].darknessConfig;
         }
         
-        console.log(`[V12.0] Dunkelheits-Config für Marker ${markerId} gespeichert:`, markers[markerId].darknessConfig);
+        console.log(`[V${this.version}] Dunkelheits-Config für Marker ${markerId} gespeichert:`, markers[markerId].darknessConfig);
     }
 
     async saveImageConfig(markerId, imagePath, showAsPopup) {
@@ -148,7 +154,7 @@ export class MarkerActions {
             localMarker.data.imageConfig = markers[markerId].imageConfig;
         }
         
-        console.log(`[V12.0] Bild-Config für Marker ${markerId} gespeichert:`, markers[markerId].imageConfig);
+        console.log(`[V${this.version}] Bild-Config für Marker ${markerId} gespeichert:`, markers[markerId].imageConfig);
     }
 
     requestCheck(markerData) {
@@ -192,6 +198,27 @@ export class MarkerActions {
         
         const markerName = markerData.customName || markerData.label;
         
+        // Lade gespeichertes Skript falls vorhanden
+        const savedScript = markerData.customScript;
+        
+        if (!savedScript) {
+            ui.notifications.warn(`Kein Skript für "${markerName}" konfiguriert. Bitte erst konfigurieren.`);
+            this.configureScript(markerData);
+            return;
+        }
+        
+        // Führe das gespeicherte Skript aus
+        this.runScript(savedScript, markerData);
+    }
+
+    async configureScript(markerData) {
+        if (!game.user.isGM) {
+            ui.notifications.error("Nur der GM kann Skripte konfigurieren!");
+            return;
+        }
+        
+        const markerName = markerData.customName || markerData.label;
+        
         // Verstecke Rechtsklick-Menü
         const contextMenu = document.querySelector('.e9l-marker-menu');
         if (contextMenu) {
@@ -220,76 +247,36 @@ ChatMessage.create({
     speaker: { alias: "Erzähler" }
 });`;
         
-        // Hilfsfunktion für Validierung
-        const validateScript = (script) => {
-            const validationResult = this.validateJavaScript(script);
-            if (validationResult.valid) {
-                ui.notifications.info("✅ JavaScript-Syntax ist gültig!");
-            } else {
-                ui.notifications.error(`❌ Syntax-Fehler: ${validationResult.error}`);
-            }
+        // Template-Daten vorbereiten
+        const templateData = {
+            scriptContent: savedScript
         };
         
-        // Hilfsfunktion für Ausführung
-        const runScript = (script) => {
-            const validationResult = this.validateJavaScript(script);
-            if (!validationResult.valid) {
-                ui.notifications.error(`Syntax-Fehler: ${validationResult.error}`);
-                return;
-            }
-            
-            try {
-                const context = {
-                    marker: markerData,
-                    markerName: markerName,
-                    canvas: canvas,
-                    scene: canvas.scene,
-                    game: game,
-                    ui: ui,
-                    ChatMessage: ChatMessage,
-                    Roll: Roll
-                };
-                
-                const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-                const executeScript = new AsyncFunction('context', `
-                    const { marker, markerName, canvas, scene, game, ui, ChatMessage, Roll } = context;
-                    ${script}
-                `);
-                
-                executeScript(context).then(() => {
-                    ui.notifications.info(`✅ Skript für "${markerName}" erfolgreich ausgeführt`);
-                }).catch(error => {
-                    ui.notifications.error(`Laufzeitfehler: ${error.message}`);
-                    console.error('[V12.0] Skript-Laufzeitfehler:', error);
-                });
-            } catch (error) {
-                ui.notifications.error(`Fehler beim Ausführen: ${error.message}`);
-            }
-        };
+        // Template laden
+        const dialogContent = await TemplateLoader.renderTemplate(
+            'modules/e9l-scene-marker/templates/script-dialog.html',
+            templateData
+        );
         
-        // Dialog mit Custom-HTML für bessere Kontrolle
+        // Dialog erstellen
         new Dialog({
             title: `Skript konfigurieren - ${markerName}`,
-            content: `
-                <div class="form-group">
-                    <textarea id="marker-script" rows="20" style="width: 100%; font-family: 'Courier New', monospace; font-size: 12px; min-height: 400px; background: #1a1a1d; color: #e0e0e0; border: 1px solid #444; padding: 10px;">${savedScript}</textarea>
-                </div>
-                <div style="display: none;">
-                    <button type="button" id="custom-validate">Prüfen</button>
-                    <button type="button" id="custom-execute">Testen</button>
-                </div>
-            `,
+            content: dialogContent,
             buttons: {
                 validate: {
                     label: "Prüfen",
-                    callback: () => {
-                        // Dieser Callback tut nichts - wir nutzen den Custom-Handler
+                    callback: (html) => {
+                        const script = html.find('#marker-script').val();
+                        this.validateScript(script);
+                        return false; // Dialog nicht schließen
                     }
                 },
-                execute: {
+                test: {
                     label: "Testen", 
-                    callback: () => {
-                        // Dieser Callback tut nichts - wir nutzen den Custom-Handler
+                    callback: (html) => {
+                        const script = html.find('#marker-script').val();
+                        this.runScript(script, markerData);
+                        return false; // Dialog nicht schließen
                     }
                 },
                 save: {
@@ -317,37 +304,7 @@ ChatMessage.create({
                     }
                 }
             },
-            default: "execute",
-            render: (html) => {
-                // WICHTIG: Überschreibe die Standard-Click-Handler komplett
-                setTimeout(() => {
-                    const validateBtn = html.find('button[data-button="validate"]');
-                    const executeBtn = html.find('button[data-button="execute"]');
-                    
-                    // Entferne alle existierenden Click-Handler
-                    validateBtn.off('click');
-                    executeBtn.off('click');
-                    
-                    // Füge neue Click-Handler hinzu
-                    validateBtn.on('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        const script = html.find('#marker-script').val();
-                        validateScript(script);
-                        return false;
-                    });
-                    
-                    executeBtn.on('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        const script = html.find('#marker-script').val();
-                        runScript(script);
-                        return false;
-                    });
-                }, 100);
-            },
+            default: "test",
             close: () => {
                 const contextMenu = document.querySelector('.e9l-marker-menu');
                 if (contextMenu) {
@@ -355,6 +312,59 @@ ChatMessage.create({
                 }
             }
         }, dialogOptions).render(true);
+    }
+
+    /**
+     * Validiert JavaScript-Syntax
+     */
+    validateScript(script) {
+        const validationResult = this.validateJavaScript(script);
+        if (validationResult.valid) {
+            ui.notifications.info("✅ JavaScript-Syntax ist gültig!");
+        } else {
+            ui.notifications.error(`❌ Syntax-Fehler: ${validationResult.error}`);
+        }
+    }
+
+    /**
+     * Führt ein Skript aus
+     */
+    runScript(script, markerData) {
+        const markerName = markerData.customName || markerData.label;
+        const validationResult = this.validateJavaScript(script);
+        
+        if (!validationResult.valid) {
+            ui.notifications.error(`Syntax-Fehler: ${validationResult.error}`);
+            return;
+        }
+        
+        try {
+            const context = {
+                marker: markerData,
+                markerName: markerName,
+                canvas: canvas,
+                scene: canvas.scene,
+                game: game,
+                ui: ui,
+                ChatMessage: ChatMessage,
+                Roll: Roll
+            };
+            
+            const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+            const executeScript = new AsyncFunction('context', `
+                const { marker, markerName, canvas, scene, game, ui, ChatMessage, Roll } = context;
+                ${script}
+            `);
+            
+            executeScript(context).then(() => {
+                ui.notifications.info(`✅ Skript für "${markerName}" erfolgreich ausgeführt`);
+            }).catch(error => {
+                ui.notifications.error(`Laufzeitfehler: ${error.message}`);
+                console.error(`[V${this.version}] Skript-Laufzeitfehler:`, error);
+            });
+        } catch (error) {
+            ui.notifications.error(`Fehler beim Ausführen: ${error.message}`);
+        }
     }
 
     /**
@@ -460,7 +470,7 @@ ChatMessage.create({
         }
     }
 
-    configureDarkness(markerData) {
+    async configureDarkness(markerData) {
         if (!game.user.isGM) {
             ui.notifications.error("Nur der GM kann die Dunkelheit konfigurieren!");
             return;
@@ -475,22 +485,21 @@ ChatMessage.create({
             contextMenu.style.display = 'none';
         }
         
+        // Template-Daten vorbereiten
+        const templateData = {
+            lowValue: config.low,
+            highValue: config.high
+        };
+        
+        // Template laden
+        const dialogContent = await TemplateLoader.renderTemplate(
+            'modules/e9l-scene-marker/templates/darkness-config.html',
+            templateData
+        );
+        
         new Dialog({
             title: `Dunkelheits-Konfiguration - ${markerName}`,
-            content: `
-                <div class="form-group">
-                    <label>Helligkeit (Tag/Hell):</label>
-                    <input type="number" id="darkness-low" value="${config.low}" 
-                           min="0" max="1" step="0.1" 
-                           style="width: 100px;">
-                </div>
-                <div class="form-group">
-                    <label>Dunkelheit (Nacht/Dunkel):</label>
-                    <input type="number" id="darkness-high" value="${config.high}" 
-                           min="0" max="1" step="0.1" 
-                           style="width: 100px;">
-                </div>
-            `,
+            content: dialogContent,
             buttons: {
                 save: {
                     label: "Speichern",
@@ -569,7 +578,7 @@ ChatMessage.create({
         }
     }
 
-    configureImage(markerData) {
+    async configureImage(markerData) {
         if (!game.user.isGM) {
             ui.notifications.error("Nur der GM kann Bilder konfigurieren!");
             return;
@@ -584,32 +593,21 @@ ChatMessage.create({
             contextMenu.style.display = 'none';
         }
         
+        // Template-Daten vorbereiten
+        const templateData = {
+            imagePath: imageConfig.path,
+            showAsPopupChecked: imageConfig.showAsPopup ? 'checked' : ''
+        };
+        
+        // Template laden
+        const dialogContent = await TemplateLoader.renderTemplate(
+            'modules/e9l-scene-marker/templates/image-config.html',
+            templateData
+        );
+        
         new Dialog({
             title: `Bild-Konfiguration - ${markerName}`,
-            content: `
-                <div class="form-group">
-                    <label>Bild-Pfad:</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="text" id="image-path" value="${imageConfig.path}" 
-                               placeholder="Pfad zum Bild..." 
-                               style="flex: 1;">
-                        <button type="button" id="image-browse" class="file-picker" 
-                                data-type="imagevideo" data-target="#image-path"
-                                title="Bild auswählen">
-                            <i class="fas fa-file-import"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="show-as-popup" ${imageConfig.showAsPopup ? 'checked' : ''}>
-                        Als Popup anzeigen (sonst im Chat)
-                    </label>
-                </div>
-                <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 3px;">
-                    <small><i class="fas fa-info-circle"></i> Das Bild wird allen Spielern angezeigt.</small>
-                </div>
-            `,
+            content: dialogContent,
             buttons: {
                 save: {
                     label: "Speichern",

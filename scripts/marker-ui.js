@@ -1,14 +1,16 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 12.0
+ * Version: 13.1.0
  * Date: 2024
- * Description: Marker UI - Rendering und DOM-Manipulation
- * Changes: Getrennte Skript-Aktionen (Ausführen vs. Konfigurieren)
+ * Description: Marker UI - Rendering und DOM-Manipulation mit Template-Support und Drag & Drop
  */
+
+import { TemplateLoader } from './template-loader.js';
 
 export class MarkerUI {
     constructor(parent) {
         this.parent = parent;
+        this.version = parent.version || '13.1.0';
     }
 
     createMarkerOverlay() {
@@ -43,7 +45,7 @@ export class MarkerUI {
     renderMarkerDOM(markerData) {
         // Nur GMs können Marker sehen
         if (!game.user.isGM) {
-            console.log('[V12.0] Spieler - Marker wird nicht gerendert');
+            console.log(`[V${this.version}] Spieler - Marker wird nicht gerendert`);
             return;
         }
         
@@ -54,13 +56,13 @@ export class MarkerUI {
         // WICHTIGE DUPLIKAT-PRÜFUNG - verhindert doppeltes Rendering
         const existingMarker = document.querySelector(`[data-marker-id="${markerData.id}"]`);
         if (existingMarker) {
-            console.log(`[V12.0] Marker ${markerData.id} existiert bereits im DOM - überspringe Rendering`);
+            console.log(`[V${this.version}] Marker ${markerData.id} existiert bereits im DOM - überspringe Rendering`);
             return;
         }
         
         // Zusätzliche Prüfung über die Map
         if (this.parent.markers.has(markerData.id)) {
-            console.log(`[V12.0] Marker ${markerData.id} existiert bereits in Map - überspringe Rendering`);
+            console.log(`[V${this.version}] Marker ${markerData.id} existiert bereits in Map - überspringe Rendering`);
             return;
         }
 
@@ -109,7 +111,7 @@ export class MarkerUI {
             element: markerElement
         });
         
-        console.log(`[V12.0] GM - Marker ${markerData.id} erfolgreich gerendert`);
+        console.log(`[V${this.version}] GM - Marker ${markerData.id} erfolgreich gerendert`);
     }
 
     updateMarkerElementPosition(element, canvasX, canvasY) {
@@ -147,7 +149,7 @@ export class MarkerUI {
         marker.data.customName = newName;
     }
 
-    showMarkerMenu(markerData, event) {
+    async showMarkerMenu(markerData, event) {
         // Nur GMs können das Menü öffnen
         if (!game.user.isGM) return;
         
@@ -160,84 +162,42 @@ export class MarkerUI {
         menu.className = 'e9l-marker-menu gm-only';
         menu.dataset.gmOnly = 'true';
         
-        // Aktueller Name oder Default
-        const currentName = markerData.customName || markerData.label;
+        // Template-Daten vorbereiten
+        const templateData = {
+            markerId: markerData.id,
+            markerName: markerData.customName || markerData.label,
+            
+            // Status-Anzeigen
+            talentStatus: markerData.talentConfig?.talent 
+                ? `<span style="font-size: 10px; color: #888;">[${markerData.talentConfig.talent}]</span>`
+                : '',
+            
+            scriptStatus: markerData.customScript 
+                ? '<i class="fas fa-check-circle" style="color: #4CAF50; margin-left: auto; font-size: 10px;"></i>'
+                : '',
+            
+            imageStatus: markerData.imageConfig?.path 
+                ? '<i class="fas fa-check-circle" style="color: #4CAF50; margin-left: auto; font-size: 10px;"></i>'
+                : '',
+            
+            darknessInfo: markerData.darknessConfig 
+                ? `<span style="font-size: 10px; color: #888;">[${markerData.darknessConfig.low} - ${markerData.darknessConfig.high}]</span>`
+                : ''
+        };
         
-        // Zeige Dunkelheits-Config Info wenn vorhanden
-        const darknessInfo = markerData.darknessConfig 
-            ? `<span style="font-size: 10px; color: #888;">[${markerData.darknessConfig.low} - ${markerData.darknessConfig.high}]</span>`
-            : '';
+        // Template laden und rendern
+        const menuHtml = await TemplateLoader.renderTemplate(
+            'modules/e9l-scene-marker/templates/marker-menu.html',
+            templateData
+        );
         
-        // Zeige Bild-Status wenn vorhanden
-        const imageStatus = markerData.imageConfig?.path 
-            ? '<i class="fas fa-check-circle" style="color: #4CAF50; margin-left: auto; font-size: 10px;"></i>'
-            : '';
-        
-        // Zeige Skript-Status (nur grüner Haken wenn konfiguriert, sonst nichts)
-        const scriptStatus = markerData.customScript 
-            ? '<i class="fas fa-check-circle" style="color: #4CAF50; margin-left: auto; font-size: 10px;"></i>'
-            : '';
-        
-        // Zeige Talent-Status wenn vorhanden
-        const talentStatus = markerData.talentConfig?.talent 
-            ? `<span style="font-size: 10px; color: #888;">[${markerData.talentConfig.talent}]</span>`
-            : '';
-        
-        menu.innerHTML = `
-            <div class="marker-name-input">
-                <input type="text" 
-                       class="marker-name-field" 
-                       value="${currentName}" 
-                       placeholder="Marker-Name..."
-                       maxlength="50"
-                       data-marker-id="${markerData.id}">
-            </div>
-            <div class="context-divider"></div>
-            <ul class="context-items">
-                <li class="context-item" data-action="request-check">
-                    <i class="fas fa-dice-d20"></i> Talentprobe anfordern ${talentStatus}
-                </li>
-                <li class="context-item" data-action="configure-talent">
-                    <i class="fas fa-cog"></i> Talentprobe konfigurieren
-                </li>
-                <li class="context-item divider"></li>
-                <li class="context-item" data-action="request-group-check">
-                    <i class="fas fa-users"></i> Sammelprobe anfordern
-                </li>
-                <li class="context-item divider"></li>
-                <li class="context-item" data-action="execute-script">
-                    <i class="fas fa-play"></i> Skript ausführen ${scriptStatus}
-                </li>
-                <li class="context-item" data-action="configure-script">
-                    <i class="fas fa-code"></i> Skript konfigurieren
-                </li>
-                <li class="context-item divider"></li>
-                <li class="context-item" data-action="show-image">
-                    <i class="fas fa-image"></i> Bild zeigen ${imageStatus}
-                </li>
-                <li class="context-item" data-action="configure-image">
-                    <i class="fas fa-cog"></i> Bild konfigurieren
-                </li>
-                <li class="context-item divider"></li>
-                <li class="context-item" data-action="toggle-darkness">
-                    <i class="fas fa-moon"></i> Dunkelheit umschalten ${darknessInfo}
-                </li>
-                <li class="context-item" data-action="configure-darkness">
-                    <i class="fas fa-cog"></i> Dunkelheit konfigurieren
-                </li>
-                <li class="context-item divider"></li>
-                <li class="context-item" data-action="delete-marker">
-                    <i class="fas fa-trash"></i> Marker löschen
-                </li>
-            </ul>
-        `;
-
+        menu.innerHTML = menuHtml;
         menu.style.left = `${event.clientX}px`;
         menu.style.top = `${event.clientY}px`;
 
         document.body.appendChild(menu);
 
-        // Auto-Save für Name-Input
+        // Event-Handler für Name-Input
         const nameInput = menu.querySelector('.marker-name-field');
         let saveTimeout;
         
@@ -262,7 +222,7 @@ export class MarkerUI {
                 // Update markerData für weitere Aktionen
                 markerData.customName = newName;
                 
-                console.log(`[V12.0] Marker ${markerData.id} umbenannt zu: ${newName}`);
+                console.log(`[V${this.version}] Marker ${markerData.id} umbenannt zu: ${newName}`);
             }, 300);
         });
 
@@ -284,6 +244,7 @@ export class MarkerUI {
             nameInput.select();
         }, 10);
 
+        // Event-Handler für Menü-Items
         menu.querySelectorAll('.context-item').forEach(item => {
             item.addEventListener('click', async (e) => {
                 const action = item.dataset.action;
@@ -314,6 +275,7 @@ export class MarkerUI {
             });
         });
 
+        // Click-Away Handler
         setTimeout(() => {
             const closeMenu = (e) => {
                 if (!menu.contains(e.target)) {

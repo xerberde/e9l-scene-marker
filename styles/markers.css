@@ -1,7 +1,7 @@
 /**
  * e9l DSA5/TDE5 Scene Marker - Marker Styles
- * Version: 12.0
- * Description: Styles für die Marker-Elemente
+ * Version: 13.2.0
+ * Description: Styles für die Marker-Elemente mit Drag-Support und Foundry-Integration
  */
 
 /* DOM Marker Styles - Dunkles Quadrat mit abgerundeten Ecken */
@@ -17,8 +17,8 @@
 .e9l-scene-marker-dom .marker-box {
     width: 36px;
     height: 36px;
-    background: var(--e9l-bg-primary);
-    border: 1px solid var(--e9l-border-color);
+    background: rgba(0, 0, 0, 0.5);  /* Wie Foundry Controls */
+    border: 1px solid var(--color-border-dark-tertiary);  /* Foundry Dark Border */
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -32,7 +32,7 @@
 
 .e9l-scene-marker-dom .marker-box i {
     font-size: 18px;
-    color: var(--e9l-text-secondary);
+    color: var(--color-text-light-highlight);  /* Foundry Light Text */
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
     transition: all var(--e9l-transition-normal);
 }
@@ -43,30 +43,27 @@
     top: 40px;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--e9l-bg-primary);
-    border: 1px solid var(--e9l-border-hover);
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--color-border-dark-tertiary);
     border-radius: 4px;
     padding: 3px 8px;
     font-size: 11px;
-    font-family: "Signika", sans-serif;
-    color: var(--e9l-text-primary);
+    font-family: var(--font-primary);
+    color: var(--color-text-light-highlight);
     white-space: nowrap;
     pointer-events: none;
-    box-shadow: 
-        var(--e9l-shadow-md),
-        var(--e9l-shadow-inset);
+    box-shadow: var(--e9l-shadow-md);
     z-index: 31;
     animation: fadeIn var(--e9l-transition-normal);
 }
 
-/* Hover-Effekt - dezent */
+/* Hover-Effekt - Orange wie xerbers-dsa5-roller */
 .e9l-scene-marker-dom:hover .marker-box,
 .e9l-scene-marker-dom.hover .marker-box {
-    background: var(--e9l-bg-secondary);
-    border-color: var(--e9l-border-hover);
-    box-shadow: 
-        var(--e9l-shadow-md),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid red;  /* Rot für top/left/right */
+    border-bottom: 1px solid #ff6400;  /* Orange für bottom */
+    box-shadow: 0 0 10px #ff6400;  /* Orange Glow */
 }
 
 .e9l-scene-marker-dom:hover,
@@ -76,5 +73,38 @@
 
 .e9l-scene-marker-dom:hover .marker-box i,
 .e9l-scene-marker-dom.hover .marker-box i {
-    color: var(--e9l-text-primary);
+    color: #FFF;  /* Weiß bei Hover wie xerbers-dsa5-roller */
+}
+
+/* Dragging-State - Marker wird verschoben */
+.e9l-scene-marker-dom.dragging {
+    cursor: move !important;
+    opacity: 0.8 !important;
+    z-index: 1000 !important;
+    transition: none !important; /* Keine Transition während Dragging */
+}
+
+.e9l-scene-marker-dom.dragging .marker-box {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid red;  /* Rot beim Ziehen */
+    border-bottom: 1px solid #ff6400;  /* Orange Bottom */
+    box-shadow: 
+        0 0 20px #ff6400,  /* Stärkerer Orange Glow beim Ziehen */
+        0 5px 15px rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+    transition: none !important;
+}
+
+.e9l-scene-marker-dom.dragging .marker-box i {
+    color: #ff6400;  /* Orange Icon beim Ziehen */
+    animation: pulse 1s infinite;
+}
+
+/* Prevent text selection during drag */
+.e9l-scene-marker-dom.dragging,
+.e9l-scene-marker-dom.dragging * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
 }

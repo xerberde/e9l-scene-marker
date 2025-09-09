@@ -1,20 +1,27 @@
 # CSS-Struktur Dokumentation
 
-## Version 12.0 - Modulare CSS-Architektur
+## Version 13.1.0 - Modulare CSS-Architektur mit Template-System & Drag-Support
 
 Die CSS-Styles wurden thematisch in mehrere Dateien aufgeteilt für bessere Wartbarkeit und Organisation.
+Neu in v13.1: Drag & Drop für Marker, vereinfachte Scene Controls.
 
 ## 📁 Dateistruktur
 
 ```
 e9l-scene-marker/
-├── module.json                    # Modul-Manifest (v12.0)
+├── module.json                    # Modul-Manifest (v13.0.0)
 ├── scripts/                       # JavaScript-Module
-│   ├── main.js
-│   ├── marker-manager.js
-│   ├── marker-ui.js
-│   ├── marker-actions.js
-│   └── marker-events.js
+│   ├── main.js                   # Hauptmodul mit Versionsverwaltung
+│   ├── marker-manager.js         # CRUD-Operationen
+│   ├── marker-ui.js              # UI-Rendering mit Templates & Drag
+│   ├── marker-actions.js         # Aktionslogik
+│   ├── marker-events.js          # Event-Handler
+│   └── template-loader.js        # Template-System
+├── templates/                     # HTML-Templates
+│   ├── marker-menu.html          # Kontextmenü-Template
+│   ├── script-dialog.html        # Skript-Dialog-Template
+│   ├── darkness-config.html      # Dunkelheits-Konfig-Template
+│   └── image-config.html         # Bild-Konfig-Template
 ├── styles/                        # CSS-Module
 │   ├── base.css                  # Variablen & Grundlagen
 │   ├── animations.css            # Animationen & Effekte
@@ -25,6 +32,43 @@ e9l-scene-marker/
 └── lang/
     └── de.json
 ```
+
+## 🚀 Was ist neu in Version 13.1?
+
+### ✅ Drag & Drop für Marker
+- **Marker verschieben** mit gedrückter linker Maustaste
+- **Automatisches Speichern** der neuen Position
+- **Visuelles Feedback** während des Verschiebens
+- **Nur für GMs** verfügbar
+
+### ✅ Ein-Klick-Bedienung (NEU!)
+- **Kein Untermenü mehr** - der Zauberstab-Button funktioniert direkt
+- **Ein Klick** aktiviert den Marker-Modus sofort
+- **Direkt in Token-Controls** integriert für schnellen Zugriff
+- Toggle-Funktion: Klick = an, nochmal klicken = aus
+
+### ✅ Template-System (v13.0)
+- Alle UI-Komponenten nutzen HTML-Templates
+- Template-Caching für bessere Performance
+- Einfache Wartbarkeit durch Trennung von HTML und JS
+
+## 🎮 Bedienung
+
+### Marker erstellen
+1. Klicke auf den **Zauberstab-Button** in den Token-Controls
+2. Der Cursor wird zum Fadenkreuz
+3. **Linksklick** auf die Szene platziert einen Marker
+4. **Rechtsklick** beendet den Platzierungsmodus
+
+### Marker verschieben (NEU!)
+1. **Linke Maustaste** auf einen Marker drücken und halten
+2. Marker an neue Position ziehen
+3. Maustaste loslassen zum Speichern
+
+### Marker konfigurieren
+1. **Rechtsklick** auf einen Marker öffnet das Kontextmenü
+2. Name direkt im Menü ändern
+3. Verschiedene Aktionen und Konfigurationen verfügbar
 
 ## 📋 CSS-Module im Detail
 
@@ -91,11 +135,11 @@ e9l-scene-marker/
 
 ## 🔧 Vorteile der modularen Struktur
 
-1. **Bessere Wartbarkeit**: Jede CSS-Datei hat einen klaren Fokus
-2. **Einfacheres Debugging**: Styles sind logisch gruppiert
-3. **Performance**: Nur benötigte Styles laden
+1. **Bessere Wartbarkeit**: Jede CSS-Datei und jedes Template hat einen klaren Fokus
+2. **Einfacheres Debugging**: Styles und Templates sind logisch gruppiert
+3. **Performance**: Nur benötigte Ressourcen laden, Template-Caching
 4. **Team-Arbeit**: Mehrere Entwickler können parallel arbeiten
-5. **Wiederverwendbarkeit**: CSS-Module können in anderen Projekten genutzt werden
+5. **Wiederverwendbarkeit**: Module können in anderen Projekten genutzt werden
 
 ## 📝 Anpassungen vornehmen
 
@@ -103,20 +147,23 @@ e9l-scene-marker/
 |----------|-------|
 | Marker-Farben ändern | `markers.css` |
 | Neue Animation hinzufügen | `animations.css` |
-| Dialog-Layout anpassen | `dialogs.css` |
-| Menü-Items stylen | `menus.css` |
+| Dialog-Layout anpassen | `dialogs.css` + `templates/*.html` |
+| Menü-Items ändern | `menus.css` + `templates/marker-menu.html` |
 | Chat-Nachrichten formatieren | `chat.css` |
 | Globale Variablen | `base.css` |
 
 ## 🚀 Installation
 
-1. Alle CSS-Dateien in den `styles/` Ordner kopieren
-2. `module.json` mit Version 12.0 verwenden
+1. Alle Dateien in den entsprechenden Ordner kopieren
+2. `module.json` mit Version 13.0.0 verwenden
 3. Foundry VTT neu laden
 
-## 📌 Wichtige Änderungen in v12.0
+## 📌 Wichtige Änderungen in v13.0
 
-- ✅ **Script-Dialog Buttons sind jetzt HORIZONTAL angeordnet**
+- ✅ **Template-System für alle UI-Komponenten**
+- ✅ **Vereinheitlichte Versionsnummer (13.0.0)**
+- ✅ **Getrennte Skript-Aktionen** (Ausführen vs. Konfigurieren)
+- ✅ **Script-Dialog Buttons sind HORIZONTAL angeordnet**
 - ✅ Farbcodierte Buttons für bessere UX
 - ✅ CSS-Variablen für einfache Theme-Anpassungen
 - ✅ Optimierte Hover-Effekte
@@ -127,8 +174,20 @@ e9l-scene-marker/
 Falls Styles nicht korrekt laden:
 1. Browser-Cache leeren (F5 oder Strg+F5)
 2. Prüfen ob alle CSS-Dateien im `styles/` Ordner sind
-3. `module.json` auf korrekte Pfade prüfen
-4. Browser-Konsole auf Fehler checken
+3. Prüfen ob alle Templates im `templates/` Ordner sind
+4. `module.json` auf korrekte Pfade prüfen
+5. Browser-Konsole auf Fehler checken
+
+## 🔍 Debug-Funktionen
+
+Im GM-Modus stehen folgende Debug-Befehle zur Verfügung:
+```javascript
+// Marker-Informationen ausgeben
+game.e9lSceneMarker.debugMarkers()
+
+// Aktuelle Version prüfen
+game.e9lSceneMarker.getVersion()
+```
 
 ## 📜 Lizenz
 

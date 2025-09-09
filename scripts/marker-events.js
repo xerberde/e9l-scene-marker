@@ -1,14 +1,14 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 10.0
+ * Version: 13.1.0
  * Date: 2024
  * Description: Marker Events - Event-Handler für Marker-Interaktionen
- * Changes: GM-Only Event-Handling
  */
 
 export class MarkerEvents {
     constructor(parent) {
         this.parent = parent;
+        this.version = parent.version || '13.1.0';
         
         // Bind event handlers
         this.handleCanvasClick = this.handleCanvasClick.bind(this);
@@ -18,7 +18,7 @@ export class MarkerEvents {
     activateMarkerMode() {
         // Nur GMs können den Marker-Modus aktivieren
         if (!game.user.isGM) {
-            console.warn('[V8.0] Nur GMs können den Marker-Modus aktivieren');
+            console.warn(`[V${this.version}] Nur GMs können den Marker-Modus aktivieren`);
             return;
         }
         
@@ -36,11 +36,14 @@ export class MarkerEvents {
         canvas.stage.off('pointerdown', this.handleCanvasClick);
         canvas.stage.off('rightdown', this.handleRightClick);
         
-        const control = ui.controls.controls.find(c => c.name === "e9l-markers");
-        if (control) {
-            const tool = control.tools.find(t => t.name === "place-marker");
-            if (tool) tool.active = false;
-            ui.controls.render();
+        // Finde unseren Button in den Token-Controls
+        const tokenControls = ui.controls.controls.find(c => c.name === "token");
+        if (tokenControls) {
+            const tool = tokenControls.tools.find(t => t.name === "e9l-scene-marker");
+            if (tool) {
+                tool.active = false;
+                ui.controls.render();
+            }
         }
         
         this.parent.isPlacing = false;
@@ -60,7 +63,7 @@ export class MarkerEvents {
         if (position && position.x !== undefined && position.y !== undefined) {
             this.parent.manager.createMarker(position.x, position.y);
         } else {
-            console.warn('[V11.0] Ungültige Position für Marker');
+            console.warn(`[V${this.version}] Ungültige Position für Marker`);
         }
     }
 

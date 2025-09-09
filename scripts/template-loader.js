@@ -1,6 +1,6 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 12.0
+ * Version: 13.1.0
  * Description: Template Loader - Lädt HTML-Templates aus Dateien
  */
 
@@ -31,7 +31,7 @@ export class TemplateLoader {
             
             return html;
         } catch (error) {
-            console.error(`[E9L] Fehler beim Laden des Templates:`, error);
+            console.error(`[E9L v13.1.0] Fehler beim Laden des Templates:`, error);
             return '';
         }
     }
@@ -65,13 +65,13 @@ export class TemplateLoader {
             'modules/e9l-scene-marker/templates/image-config.html'
         ];
         
-        console.log('[E9L] Lade Templates...');
+        console.log('[E9L v13.1.0] Lade Templates...');
         
         for (const template of templates) {
             await this.loadTemplate(template);
         }
         
-        console.log('[E9L] Templates geladen');
+        console.log('[E9L v13.1.0] Templates geladen');
     }
 }
 
