@@ -1,6 +1,6 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 13.3.1
+ * Version: 13.3.4
  * Date: 2024
  * Description: Marker Manager - CRUD-Operationen mit Solid Scroll Icon
  */
@@ -8,7 +8,7 @@
 export class MarkerManager {
     constructor(parent) {
         this.parent = parent;
-        this.version = parent.version || '13.3.1';
+        this.version = parent.version || '13.3.4';
     }
 
     async createMarker(x, y) {

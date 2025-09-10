@@ -1,90 +1,38 @@
 <div class="e9l-image-config-form">
-    <div class="form-group">
-        <label for="media-path">Bild/Video-Pfad:</label>
-        <div class="input-group">
-            <input type="text" 
-                   id="media-path" 
-                   class="media-path-input"
-                   value="{{imagePath}}" 
-                   placeholder="Pfad zum Bild oder Video..."
-                   data-tooltip="Unterstützte Formate: JPG, PNG, GIF, WebP, MP4, WebM">
-            <button type="button" 
-                    id="media-browse" 
-                    class="file-picker-btn"
-                    title="Datei auswählen">
-                <i class="fas fa-folder-open"></i>
-            </button>
-            <button type="button"
-                    id="media-clear"
-                    class="clear-btn"
-                    title="Pfad löschen">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
+    <input type="hidden" 
+           id="media-path" 
+           value="{{imagePath}}">
     
     <div class="form-group preview-group">
-        <label>Vorschau:</label>
-        <div class="media-preview" id="media-preview">
-            <div class="preview-placeholder">
-                <i class="fas fa-image"></i>
-                <span>Keine Datei ausgewählt</span>
+        <div class="media-preview-container">
+            <div class="media-preview" id="media-preview">
+                <div class="preview-placeholder">
+                    <i class="fas fa-image"></i>
+                    <span>Keine Datei ausgewählt</span>
+                </div>
             </div>
         </div>
     </div>
     
+    <div class="form-group button-group">
+        <button type="button" 
+                id="media-browse" 
+                class="e9l-button"
+                title="Datei auswählen&#10;&#10;Unterstützte Formate:&#10;• Bilder: JPG, PNG, GIF, WebP&#10;• Videos: MP4, WebM&#10;&#10;⚠️ Das Medium wird allen Spielern angezeigt">
+            <i class="fas fa-folder-open"></i> Datei wählen
+        </button>
+        <button type="button"
+                id="media-clear"
+                class="e9l-button secondary">
+            <i class="fas fa-times"></i> Leeren
+        </button>
+    </div>
+    
     <div class="form-group">
-        <label>Anzeigeoptionen:</label>
-        <div class="option-group">
-            <label class="checkbox-label">
-                <input type="checkbox" 
-                       id="show-as-popup" 
-                       {{showAsPopupChecked}}>
-                <span>Als Popup anzeigen</span>
-            </label>
-            <small class="help-text">Wenn deaktiviert, wird das Bild/Video im Chat angezeigt</small>
-        </div>
-    </div>
-    
-    <div class="form-group size-options" id="size-options">
-        <label for="display-size">Anzeigegröße:</label>
-        <select id="display-size" class="size-select">
-            <option value="small">Klein (200px)</option>
-            <option value="medium" selected>Mittel (400px)</option>
-            <option value="large">Groß (600px)</option>
-            <option value="full">Original</option>
+        <label for="display-mode">Anzeigemodus:</label>
+        <select id="display-mode" class="display-mode-select">
+            <option value="chat" {{#unless showAsPopup}}selected{{/unless}}>Im Chat anzeigen</option>
+            <option value="popup" {{#if showAsPopup}}selected{{/if}}>Als Popup öffnen</option>
         </select>
-    </div>
-    
-    <div class="form-group video-options" id="video-options" style="display: none;">
-        <label>Video-Optionen:</label>
-        <div class="option-group">
-            <label class="checkbox-label">
-                <input type="checkbox" id="video-autoplay" checked>
-                <span>Automatisch abspielen</span>
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" id="video-loop">
-                <span>Wiederholen</span>
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" id="video-muted" checked>
-                <span>Stumm starten</span>
-            </label>
-        </div>
-    </div>
-    
-    <div class="form-info">
-        <i class="fas fa-info-circle"></i>
-        <div>
-            <p><strong>Unterstützte Formate:</strong></p>
-            <ul>
-                <li>Bilder: JPG, PNG, GIF, WebP</li>
-                <li>Videos: MP4, WebM</li>
-            </ul>
-            <p class="warning-text">
-                <i class="fas fa-eye"></i> Das Bild/Video wird allen Spielern angezeigt
-            </p>
-        </div>
     </div>
 </div>

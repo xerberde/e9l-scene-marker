@@ -1,6 +1,6 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 13.3.1
+ * Version: 13.3.5
  * Date: 2024
  * Description: Hauptmodul - Solid Scroll Icon für Button
  */
@@ -19,7 +19,7 @@ class E9LSceneMarker {
         this.isDeleting = false;
         
         // Version aus module.json
-        this.version = '13.3.1';
+        this.version = '13.3.5';
         
         // Module initialisieren
         this.templateLoader = new TemplateLoader();

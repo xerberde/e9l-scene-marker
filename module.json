@@ -2,7 +2,7 @@
   "id": "e9l-scene-marker",
   "title": "e9l DSA5/TDE5 Scene Marker",
   "description": "Ein Modul zum Setzen von interaktiven Markern in Foundry VTT Szenen - mit Drag & Drop Support",
-  "version": "13.3.1",
+  "version": "13.3.5",
   "compatibility": {
     "minimum": "12",
     "verified": "12",

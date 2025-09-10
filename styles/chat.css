@@ -1,13 +1,12 @@
 /**
  * e9l DSA5/TDE5 Scene Marker - Chat Styles
- * Version: 12.0
- * Description: Styles für Chat-Nachrichten und Medien
+ * Version: 13.3.4
+ * Description: Optimierte Styles für Chat-Nachrichten und Medien
  */
 
 /* Chat-Nachrichten Styling */
 .e9l-check-request,
-.e9l-group-check-request,
-.e9l-marker-image {
+.e9l-group-check-request {
     padding: var(--e9l-spacing-md);
     background: linear-gradient(135deg, rgba(26, 26, 29, 0.5) 0%, rgba(13, 13, 15, 0.5) 100%);
     border: 1px solid var(--e9l-border-color);
@@ -16,8 +15,7 @@
 }
 
 .e9l-check-request h3,
-.e9l-group-check-request h3,
-.e9l-marker-image h3 {
+.e9l-group-check-request h3 {
     margin: 0 0 var(--e9l-spacing-md) 0;
     color: var(--e9l-text-primary);
     font-size: 14px;
@@ -27,8 +25,7 @@
 }
 
 .e9l-check-request i,
-.e9l-group-check-request i,
-.e9l-marker-image i {
+.e9l-group-check-request i {
     color: rgba(255, 200, 100, 0.8);
 }
 
@@ -47,10 +44,11 @@
     font-size: 11px;
 }
 
-/* Chat-Bild/Video Styling - Minimalistisch */
+/* Chat-Bild/Video Styling - Optimiert für volle Breite */
 .e9l-marker-media {
     margin: 0;
     padding: 0;
+    width: 100%;
 }
 
 .e9l-marker-media img,
@@ -61,18 +59,15 @@
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Bild in Chat-Nachricht */
-.e9l-marker-image img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: var(--e9l-spacing-md) auto;
-    border-radius: 4px;
-    box-shadow: var(--e9l-shadow-md);
+/* Video-spezifische Styles */
+.e9l-marker-media video {
+    background: #000;
+    max-height: 500px; /* Verhindert zu große Videos */
+    object-fit: contain;
 }
 
 /* Atmosphärische Nachrichten */

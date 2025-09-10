@@ -1,90 +1,90 @@
 # CSS-Struktur Dokumentation
 
-## Version 13.2.0 - Modulare CSS-Architektur mit funktionierendem Drag & Drop
+## Version 13.3.4 - Modulare CSS-Architektur mit dynamischen Popups
 
 Die CSS-Styles wurden thematisch in mehrere Dateien aufgeteilt für bessere Wartbarkeit und Organisation.
-Neu in v13.2: Vollständige Drag & Drop Implementierung, Orange Theme für Controls.
+Neu in v13.3.4: Dynamische Popup-Größe, vereinfachte Konfiguration, einheitliche Buttons.
 
 ## 📁 Dateistruktur
 
 ```
 e9l-scene-marker/
-├── module.json                    # Modul-Manifest (v13.2.0)
+├── module.json                    # Modul-Manifest (v13.3.4)
 ├── scripts/                       # JavaScript-Module
 │   ├── main.js                   # Hauptmodul mit Versionsverwaltung
 │   ├── marker-manager.js         # CRUD-Operationen
-│   ├── marker-ui.js              # UI-Rendering mit Templates & Drag ✨
-│   ├── marker-actions.js         # Aktionslogik
+│   ├── marker-ui.js              # UI-Rendering mit Templates & Drag
+│   ├── marker-actions.js         # Aktionslogik mit dynamischen Popups ✨
 │   ├── marker-events.js          # Event-Handler
 │   └── template-loader.js        # Template-System
 ├── templates/                     # HTML-Templates
 │   ├── marker-menu.html          # Kontextmenü-Template
 │   ├── script-dialog.html        # Skript-Dialog-Template
 │   ├── darkness-config.html      # Dunkelheits-Konfig-Template
-│   └── image-config.html         # Bild-Konfig-Template
+│   └── image-config.html         # Bild-Konfig-Template (vereinfacht) ✨
 ├── styles/                        # CSS-Module
-│   ├── base.css                  # Variablen & Grundlagen ✨
+│   ├── base.css                  # Variablen & Grundlagen
 │   ├── animations.css            # Animationen & Effekte
-│   ├── markers.css               # Marker-Styles ✨
+│   ├── markers.css               # Marker-Styles
 │   ├── menus.css                 # Kontextmenü-Styles
-│   ├── dialogs.css               # Dialog & Button-Styles
+│   ├── dialogs.css               # Dialog & Button-Styles (vereinheitlicht) ✨
 │   └── chat.css                  # Chat-Nachrichten-Styles
 └── lang/
     └── de.json
 ```
 
-## 🚀 Was ist neu in Version 13.2.0?
+## 🚀 Was ist neu in Version 13.3.4?
 
-### ✅ Vollständige Drag & Drop Implementierung
-- **Marker verschieben** mit gedrückter linker Maustaste
-- **Flüssige Bewegung** durch direkte DOM-Updates
-- **Automatisches Speichern** der neuen Position
-- **Visuelles Feedback** mit Orange Glow während des Verschiebens
-- **Memory Leak Prevention** durch Cleanup-Funktionen
-- **Nur für GMs** verfügbar
+### ✅ Dynamische Popup-Größe
+- **30% der Bildschirmhöhe** als Basis für Popups
+- **Automatische Anpassung** an Bildformat
+- **Responsive Skalierung** für verschiedene Auflösungen
+- **Optimale Darstellung** ohne Scrollbalken
 
-### ✅ Orange Theme für Scene Controls
-- **Konsistentes Design** - Button nutzt jetzt das Orange-Theme (#ff6400)
-- **Visuelles Feedback** - Pulse-Animation bei aktivem Modus
-- **Bessere Sichtbarkeit** - Orange Icon hebt sich vom Foundry UI ab
+### ✅ Vereinfachte Konfiguration
+- **Entfernte Größenoptionen** für Chat (perfekte Standardgröße)
+- **Keine Video-Optionen mehr** (Defaults: autoplay, loop, muted)
+- **Aufgeräumtes Interface** ohne redundante Felder
+- **Feste Vorschaugröße** für konsistente Darstellung
 
-### ✅ Ein-Klick-Bedienung
-- **Kein Untermenü mehr** - der Zauberstab-Button funktioniert direkt
-- **Ein Klick** aktiviert den Marker-Modus sofort
-- **Direkt in Token-Controls** integriert für schnellen Zugriff
-- Toggle-Funktion: Klick = an, nochmal klicken = aus
-
-### ✅ Template-System (v13.0)
-- Alle UI-Komponenten nutzen HTML-Templates
-- Template-Caching für bessere Performance
-- Einfache Wartbarkeit durch Trennung von HTML und JS
+### ✅ Einheitliches Button-Design
+- **Alle Buttons im Foundry-Style**
+- **Konsistente Hover-Effekte**
+- **Gleiche Größe und Abstände**
+- **Professionelles Erscheinungsbild**
 
 ## 🎮 Bedienung
 
 ### Marker erstellen
-1. Klicke auf den **orangenen Zauberstab-Button** in den Token-Controls
+1. Klicke auf den **Scroll-Button** in den Token-Controls
 2. Der Cursor wird zum Fadenkreuz
 3. **Linksklick** auf die Szene platziert einen Marker
 4. **Rechtsklick** beendet den Platzierungsmodus
 
-### Marker verschieben (FUNKTIONIERT!)
+### Marker verschieben
 1. **Linke Maustaste** auf einen Marker drücken und halten
-2. Marker an neue Position ziehen (Orange Glow erscheint)
+2. Marker an neue Position ziehen (Petrol Glow erscheint)
 3. Maustaste loslassen zum Speichern
 4. Notification bestätigt die Verschiebung
 
-### Marker konfigurieren
-1. **Rechtsklick** auf einen Marker öffnet das Kontextmenü
-2. Name direkt im Menü ändern (max. 50 Zeichen)
-3. Verschiedene Aktionen und Konfigurationen verfügbar
+### Bild/Video konfigurieren
+1. **Rechtsklick** auf einen Marker
+2. **"Bild/Video konfigurieren"** wählen
+3. **"Datei wählen"** Button klicken (Tooltip zeigt Formate)
+4. **Dropdown** wählen: "Im Chat anzeigen" oder "Als Popup öffnen"
+5. **Vorschau** zeigt das Medium in fester Größe
+6. Speichern und mit **"Bild/Video zeigen"** aktivieren
+
+### Medien-Anzeige
+- **Im Chat**: Optimale Größe, volle Breite
+- **Als Popup**: 30% der Bildschirmhöhe, dynamisch angepasst
+- **Videos**: Immer mit autoplay, loop und muted
 
 ## 📋 CSS-Module im Detail
 
-### 1. **base.css** - Grundlagen (v13.2.0)
+### 1. **base.css** - Grundlagen (v13.2.1)
 - CSS-Variablen für konsistentes Theming
-- **NEU: Orange Theme-Variablen** (#ff6400)
-- Scene Control Button-Styles mit Orange Glow
-- Pulse-Animation für aktiven Button
+- Native Foundry Theme Integration
 - Globale Container-Styles
 - Cursor-Styles
 
@@ -94,31 +94,31 @@ e9l-scene-marker/
 - Transition-Helper-Klassen
 - Loading-States
 
-### 3. **markers.css** - Marker-Elemente (v13.2.0)
+### 3. **markers.css** - Marker-Elemente (v13.3.1)
 - `.e9l-scene-marker-dom` - Marker-Container
 - `.marker-box` - Marker-Box-Styles
-- `.marker-label` - Hover-Labels mit Orange Border
-- **NEU: Dragging-States** mit verstärktem Glow
-- Orange Icon-Farbe im Normalzustand
+- `.marker-label` - Hover-Labels mit Petrol Border
+- Dragging-States mit verstärktem Glow
 - Spawn-Animation beim Erstellen
 
-### 4. **menus.css** - Kontextmenüs
+### 4. **menus.css** - Kontextmenüs (v13.3.1)
 - `.e9l-marker-menu` - Menü-Container
 - `.marker-name-input` - Name-Eingabefeld
 - `.context-items` - Menü-Items
-- Status-Icons und Divider
+- Petrol Icons für konsistentes Design
 
-### 5. **dialogs.css** - Dialoge
+### 5. **dialogs.css** - Dialoge (v13.3.4)
 - `.e9l-script-dialog` - Script-Dialog-Styles
-- **Horizontale Button-Anordnung** (Prüfen, Testen, Speichern, Abbrechen)
-- Konfigurations-Dialog-Styles
-- Form-Element-Styles
+- `.e9l-image-config-form` - **NEU: Vereinfachte Bild-Konfiguration**
+- **Einheitliche Button-Styles** im Foundry-Design
+- **Feste Vorschaugröße** (250px Höhe)
+- **Dark Tooltips** für Dateiauswahl
 
 ### 6. **chat.css** - Chat-Integration
-- `.e9l-check-request` - Talentproben-Nachrichten
-- `.e9l-group-check-request` - Sammelproben-Nachrichten
-- `.e9l-marker-image` - Bild-Anzeige im Chat
-- Atmosphärische Nachrichten
+- `.e9l-marker-media` - Optimierte Mediendarstellung
+- Volle Breite für beste Sichtbarkeit
+- Automatische Größenanpassung
+- Keine überflüssigen Titel
 
 ## 🎨 CSS-Variablen (in base.css)
 
@@ -128,16 +128,9 @@ e9l-scene-marker/
     --e9l-bg-primary: linear-gradient(135deg, #1a1a1d 0%, #0d0d0f 100%);
     --e9l-bg-secondary: linear-gradient(135deg, #202024 0%, #101012 100%);
     
-    /* NEU: Orange Theme */
-    --e9l-orange: #ff6400;
-    --e9l-orange-glow: rgba(255, 100, 0, 0.5);
-    --e9l-orange-dark: #cc5000;
-    
-    /* Button-Farben */
-    --e9l-btn-validate: /* Blau */
-    --e9l-btn-execute: /* Grün */
-    --e9l-btn-save: /* Gold */
-    --e9l-btn-cancel: /* Rot */
+    /* Petrol Theme für Marker */
+    --e9l-marker-petrol: #17a2b8;
+    --e9l-marker-turquoise: #20c997;
     
     /* Abstände */
     --e9l-spacing-xs: 4px;
@@ -147,46 +140,40 @@ e9l-scene-marker/
 }
 ```
 
-## 🔧 Vorteile der modularen Struktur
+## 🔧 Vorteile der neuen Version
 
-1. **Bessere Wartbarkeit**: Jede CSS-Datei und jedes Template hat einen klaren Fokus
-2. **Einfacheres Debugging**: Styles und Templates sind logisch gruppiert
-3. **Performance**: Nur benötigte Ressourcen laden, Template-Caching
-4. **Team-Arbeit**: Mehrere Entwickler können parallel arbeiten
-5. **Wiederverwendbarkeit**: Module können in anderen Projekten genutzt werden
+1. **Bessere Performance**: Weniger Options = schnellere Dialoge
+2. **Klarere UX**: Keine verwirrenden Einstellungen
+3. **Konsistentes Design**: Einheitliche Buttons überall
+4. **Dynamische Anpassung**: Popups passen sich an Bildschirm an
+5. **Optimale Defaults**: Video-Settings immer perfekt
 
 ## 📝 Anpassungen vornehmen
 
 | Änderung | Datei |
 |----------|-------|
-| Marker-Farben ändern | `markers.css` |
-| Button-Farbe anpassen | `base.css` |
-| Neue Animation hinzufügen | `animations.css` |
-| Dialog-Layout anpassen | `dialogs.css` + `templates/*.html` |
-| Menü-Items ändern | `menus.css` + `templates/marker-menu.html` |
-| Chat-Nachrichten formatieren | `chat.css` |
-| Globale Variablen | `base.css` |
+| Popup-Größe ändern (% der Höhe) | `marker-actions.js` Zeile ~500 |
+| Vorschau-Höhe anpassen | `dialogs.css` → `.media-preview-container` |
+| Button-Styles ändern | `dialogs.css` → `.dialog-button` |
+| Video-Defaults ändern | `marker-actions.js` → `showImage()` |
+| Tooltip-Design anpassen | `dialogs.css` → `.dialog-button[title]:hover` |
 
 ## 🚀 Installation
 
 1. Alle Dateien in den entsprechenden Ordner kopieren
-2. `module.json` mit Version 13.2.0 verwenden
+2. `module.json` mit Version 13.3.4 verwenden
 3. Foundry VTT neu laden
 
-## 📌 Wichtige Änderungen in v13.2.0
+## 📌 Wichtige Änderungen in v13.3.4
 
-- ✅ **FUNKTIONIERENDES Drag & Drop für Marker**
-- ✅ **Orange Theme für Scene Control Button**
-- ✅ **Memory Leak Prevention in Drag-Handler**
-- ✅ **Flüssige Marker-Bewegung**
-- ✅ **Automatisches Speichern der Position**
-- ✅ Vereinheitlichte Versionsnummer (13.2.0)
-- ✅ Getrennte Skript-Aktionen (Ausführen vs. Konfigurieren)
-- ✅ Script-Dialog Buttons sind HORIZONTAL angeordnet
-- ✅ Farbcodierte Buttons für bessere UX
-- ✅ CSS-Variablen für einfache Theme-Anpassungen
-- ✅ Optimierte Hover-Effekte
-- ✅ Verbesserte Dark-Theme-Integration
+- ✅ **Dynamische Popup-Größe** (30% der Bildschirmhöhe)
+- ✅ **Entfernte Größenoptionen** für Chat
+- ✅ **Entfernte Video-Optionen** (fixe Defaults)
+- ✅ **Einheitliche Buttons** im Foundry-Style
+- ✅ **Feste Vorschaugröße** (250px)
+- ✅ **Aufgeräumtes Interface** ohne Textfeld
+- ✅ **Optimierte Chat-Darstellung** (volle Breite)
+- ✅ **Bessere Dateipfad-Anzeige**
 
 ## 🐛 Fehlerbehebung
 
@@ -207,22 +194,25 @@ game.e9lSceneMarker.debugMarkers()
 // Aktuelle Version prüfen
 game.e9lSceneMarker.getVersion()
 
-// Drag & Drop testen
-// 1. Marker erstellen
-// 2. Mit Maus verschieben
-// 3. Konsole checken für Position-Logs
+// Popup-Größe testen
+// 1. Bild/Video konfigurieren
+// 2. "Als Popup öffnen" wählen
+// 3. Popup sollte 30% der Bildschirmhöhe haben
 ```
 
 ## 📜 Lizenz
 
 MIT License - Frei verwendbar und anpassbar
 
-## 🎯 Changelog v13.2.0
+## 🎯 Changelog v13.3.4
 
-- **Fixed**: Drag & Drop vollständig implementiert
-- **Added**: Orange Theme für Scene Control Button
-- **Added**: Memory Leak Prevention für Event-Listener
-- **Added**: Cleanup-Funktion beim Drag & Drop
-- **Added**: Visuelles Feedback während des Dragging
-- **Improved**: Marker-Position Updates während Pan/Zoom
-- **Improved**: CSS-Konsistenz mit Orange-Theme
+- **Added**: Dynamische Popup-Größe basierend auf Bildschirm
+- **Added**: Einheitliche Button-Styles
+- **Removed**: Größenoptionen für Chat-Anzeige
+- **Removed**: Video-Optionen (nutzt Defaults)
+- **Removed**: Überflüssiges Textfeld vor Dateiauswahl
+- **Changed**: Feste Vorschaugröße für Konsistenz
+- **Changed**: Dateipfad-Anzeige optimiert
+- **Improved**: Aufgeräumtes, klareres Interface
+- **Improved**: Performance durch weniger Optionen
+- **Fixed**: Popup-Darstellung ohne Scrollbalken

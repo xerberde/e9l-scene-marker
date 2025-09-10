@@ -1,8 +1,8 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 13.3.3
+ * Version: 13.3.5
  * Date: 2024
- * Description: Marker Actions - Optimierte Bild/Video-Anzeige
+ * Description: Marker Actions - Korrigierte Button-Handler ohne Dialog-Konflikt
  */
 
 import { TemplateLoader } from './template-loader.js';
@@ -10,7 +10,7 @@ import { TemplateLoader } from './template-loader.js';
 export class MarkerActions {
     constructor(parent) {
         this.parent = parent;
-        this.version = parent.version || '13.3.3';
+        this.version = parent.version || '13.3.5';
     }
 
     async handleMarkerAction(action, markerData) {
@@ -134,7 +134,7 @@ export class MarkerActions {
         console.log(`[V${this.version}] Dunkelheits-Config für Marker ${markerId} gespeichert:`, markers[markerId].darknessConfig);
     }
 
-    async saveImageConfig(markerId, imagePath, showAsPopup, displaySize, videoOptions) {
+    async saveImageConfig(markerId, imagePath, showAsPopup) {
         if (!game.user.isGM) return;
         
         const scene = canvas.scene;
@@ -143,16 +143,10 @@ export class MarkerActions {
         const markers = scene.getFlag('e9l-scene-marker', 'markers') || {};
         if (!markers[markerId]) return;
         
-        // Speichere erweiterte Bild/Video-Konfiguration
+        // Vereinfachte Bild/Video-Konfiguration - keine Größe, fixe Video-Optionen
         markers[markerId].imageConfig = {
             path: imagePath || '',
-            showAsPopup: showAsPopup || false,
-            displaySize: displaySize || 'medium',
-            videoOptions: videoOptions || {
-                autoplay: true,
-                loop: false,
-                muted: true
-            }
+            showAsPopup: showAsPopup || false
         };
         
         // Speichere in Scene
@@ -568,18 +562,22 @@ ChatMessage.create({
         const isVideo = /\.(mp4|webm|ogg)$/i.test(imageConfig.path);
         
         if (imageConfig.showAsPopup) {
-            // Als Popup anzeigen - 50% größer
+            // Als Popup anzeigen - Dynamische Größe basierend auf Bildschirm
+            const screenHeight = window.innerHeight;
+            const popupHeight = Math.round(screenHeight * 0.3); // 30% der Bildschirmhöhe
+            
             if (isVideo) {
-                // Für Videos: Custom Dialog mit vergrößertem Fenster
-                const videoOptions = imageConfig.videoOptions || {};
+                // Für Videos: Custom Dialog mit dynamischer Größe
                 const content = `
-                    <video src="${imageConfig.path}" 
-                           style="width: 100%; height: auto; display: block;"
-                           ${videoOptions.autoplay ? 'autoplay' : ''}
-                           ${videoOptions.loop ? 'loop' : ''}
-                           ${videoOptions.muted ? 'muted' : ''}
-                           controls>
-                    </video>
+                    <div style="width: 100%; height: ${popupHeight}px; display: flex; align-items: center; justify-content: center; background: #000;">
+                        <video src="${imageConfig.path}" 
+                               style="max-width: 100%; max-height: 100%; width: auto; height: auto;"
+                               autoplay
+                               loop
+                               muted
+                               controls>
+                        </video>
+                    </div>
                 `;
                 
                 new Dialog({
@@ -588,74 +586,53 @@ ChatMessage.create({
                     buttons: {},
                     default: null
                 }, {
-                    width: 900,  // 50% größer als default (600)
-                    height: 'auto',
+                    width: Math.round(popupHeight * 1.78), // 16:9 Aspect Ratio
+                    height: popupHeight + 50, // +50 für Titelleiste
                     resizable: true,
                     classes: ['e9l-media-popup']
                 }).render(true);
             } else {
-                // Für Bilder: ImagePopup mit größeren Dimensionen
-                const popup = new ImagePopup(imageConfig.path, {
-                    title: markerName,
-                    shareable: true
-                });
-                
-                // Override die render Methode für größere Dimensionen
-                const originalRender = popup._render;
-                popup._render = async function(force, options) {
-                    await originalRender.call(this, force, options);
-                    // Vergrößere das Fenster nach dem Rendern
-                    const img = new Image();
-                    img.onload = () => {
-                        const maxWidth = window.innerWidth * 0.8;
-                        const maxHeight = window.innerHeight * 0.8;
-                        let width = img.width * 1.5;  // 50% größer
-                        let height = img.height * 1.5;
-                        
-                        // Begrenzen auf Bildschirmgröße
-                        if (width > maxWidth) {
-                            const ratio = maxWidth / width;
-                            width = maxWidth;
-                            height = height * ratio;
-                        }
-                        if (height > maxHeight) {
-                            const ratio = maxHeight / height;
-                            height = maxHeight;
-                            width = width * ratio;
-                        }
-                        
-                        this.setPosition({
-                            width: Math.round(width),
-                            height: Math.round(height)
-                        });
-                    };
-                    img.src = imageConfig.path;
+                // Für Bilder: Custom Popup mit dynamischer Größe
+                const img = new Image();
+                img.onload = () => {
+                    const aspectRatio = img.width / img.height;
+                    const dialogHeight = popupHeight;
+                    const dialogWidth = Math.round(dialogHeight * aspectRatio);
+                    
+                    const content = `
+                        <div style="width: 100%; height: ${dialogHeight}px; display: flex; align-items: center; justify-content: center; background: #000;">
+                            <img src="${imageConfig.path}" 
+                                 style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;">
+                        </div>
+                    `;
+                    
+                    new Dialog({
+                        title: markerName,
+                        content: content,
+                        buttons: {},
+                        default: null
+                    }, {
+                        width: Math.min(dialogWidth, window.innerWidth * 0.8),
+                        height: dialogHeight + 50, // +50 für Titelleiste
+                        resizable: true,
+                        classes: ['e9l-media-popup']
+                    }).render(true);
                 };
-                
-                popup.render(true);
+                img.src = imageConfig.path;
             }
             
             ui.notifications.info(`${isVideo ? 'Video' : 'Bild'}-Popup für "${markerName}" geöffnet`);
         } else {
-            // Im Chat anzeigen - OHNE Titel, nur Bild/Video
-            const sizeMap = {
-                'small': '200px',
-                'medium': '400px',
-                'large': '600px',
-                'full': '100%'
-            };
-            const maxWidth = sizeMap[imageConfig.displaySize || 'medium'];
-            
+            // Im Chat anzeigen - OHNE Titel, nur Bild/Video mit optimaler Größe
             let content = '';
             if (isVideo) {
-                const videoOptions = imageConfig.videoOptions || {};
                 content = `
                     <div class="e9l-marker-media">
                         <video src="${imageConfig.path}" 
-                               style="max-width: ${maxWidth}; height: auto; display: block; margin: 0 auto;"
-                               ${videoOptions.autoplay ? 'autoplay' : ''}
-                               ${videoOptions.loop ? 'loop' : ''}
-                               ${videoOptions.muted ? 'muted' : ''}
+                               style="width: 100%; height: auto; display: block; margin: 0 auto;"
+                               autoplay
+                               loop
+                               muted
                                controls>
                         </video>
                     </div>
@@ -664,8 +641,7 @@ ChatMessage.create({
                 content = `
                     <div class="e9l-marker-media">
                         <img src="${imageConfig.path}" 
-                             alt="${markerName}" 
-                             style="max-width: ${maxWidth}; height: auto; display: block; margin: 0 auto; border-radius: 4px;">
+                             style="width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 4px;">
                     </div>
                 `;
             }
@@ -688,13 +664,7 @@ ChatMessage.create({
         const markerName = markerData.customName || markerData.label;
         const imageConfig = markerData.imageConfig || { 
             path: '', 
-            showAsPopup: false,
-            displaySize: 'medium',
-            videoOptions: {
-                autoplay: true,
-                loop: false,
-                muted: true
-            }
+            showAsPopup: false
         };
         
         // Verstecke Rechtsklick-Menü
@@ -706,8 +676,7 @@ ChatMessage.create({
         // Template-Daten vorbereiten
         const templateData = {
             imagePath: imageConfig.path,
-            showAsPopup: imageConfig.showAsPopup,
-            showInChat: !imageConfig.showAsPopup
+            showAsPopup: imageConfig.showAsPopup
         };
         
         // Template laden
@@ -726,15 +695,8 @@ ChatMessage.create({
                         const imagePath = html.find('#media-path').val();
                         const displayMode = html.find('#display-mode').val();
                         const showAsPopup = displayMode === 'popup';
-                        const displaySize = html.find('#display-size').val();
                         
-                        const videoOptions = {
-                            autoplay: html.find('#video-autoplay').prop('checked'),
-                            loop: html.find('#video-loop').prop('checked'),
-                            muted: html.find('#video-muted').prop('checked')
-                        };
-                        
-                        await this.saveImageConfig(markerData.id, imagePath, showAsPopup, displaySize, videoOptions);
+                        await this.saveImageConfig(markerData.id, imagePath, showAsPopup);
                         ui.notifications.info(`Bild/Video-Konfiguration für "${markerName}" gespeichert`);
                         
                         // Zeige Rechtsklick-Menü wieder
@@ -757,8 +719,11 @@ ChatMessage.create({
             },
             default: "save",
             render: (html) => {
-                // Aktiviere FilePicker Button
-                html.find('#media-browse').click((event) => {
+                // Aktiviere FilePicker Button - WICHTIG: Event-Handler mit e.preventDefault()
+                html.find('#media-browse').click((e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
                     const fp = new FilePicker({
                         type: 'imagevideo',
                         current: html.find('#media-path').val(),
@@ -770,15 +735,13 @@ ChatMessage.create({
                     fp.render(true);
                 });
                 
-                // Clear Button
-                html.find('#media-clear').click(() => {
+                // Clear Button - WICHTIG: Event-Handler mit e.preventDefault()
+                html.find('#media-clear').click((e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
                     html.find('#media-path').val('');
                     this.updateMediaPreview(html, '');
-                });
-                
-                // Update Preview bei manueller Eingabe
-                html.find('#media-path').on('change', (e) => {
-                    this.updateMediaPreview(html, e.target.value);
                 });
                 
                 // Initial Preview
@@ -786,27 +749,8 @@ ChatMessage.create({
                     this.updateMediaPreview(html, imageConfig.path);
                 }
                 
-                // Zeige/Verstecke Größenoptionen basierend auf Display-Mode
-                html.find('#display-mode').on('change', (e) => {
-                    if (e.target.value === 'popup') {
-                        html.find('#size-options').hide();
-                    } else {
-                        html.find('#size-options').show();
-                    }
-                });
-                
-                // Initial: Verstecke Größe wenn Popup
-                if (imageConfig.showAsPopup) {
-                    html.find('#size-options').hide();
-                }
-                
-                // Setze gespeicherte Werte
-                html.find('#display-size').val(imageConfig.displaySize || 'medium');
-                if (imageConfig.videoOptions) {
-                    html.find('#video-autoplay').prop('checked', imageConfig.videoOptions.autoplay);
-                    html.find('#video-loop').prop('checked', imageConfig.videoOptions.loop);
-                    html.find('#video-muted').prop('checked', imageConfig.videoOptions.muted);
-                }
+                // Initial: Setze Display-Mode
+                html.find('#display-mode').val(imageConfig.showAsPopup ? 'popup' : 'chat');
             },
             close: () => {
                 // Falls Dialog anders geschlossen wird (ESC, X-Button)
@@ -832,7 +776,6 @@ ChatMessage.create({
                     <span>Keine Datei ausgewählt</span>
                 </div>
             `);
-            html.find('#video-options').hide();
             return;
         }
         
@@ -840,18 +783,16 @@ ChatMessage.create({
         const isVideo = /\.(mp4|webm|ogg)$/i.test(path);
         
         if (isVideo) {
-            // Video-Vorschau - 70% Größe
+            // Video-Vorschau
             previewContainer.html(`
-                <video src="${path}" style="max-width: 70%; max-height: 70%;" controls muted></video>
+                <video src="${path}" style="max-width: 100%; max-height: 100%;" controls muted></video>
             `);
-            html.find('#video-options').show();
         } else {
-            // Bild-Vorschau - 70% Größe
+            // Bild-Vorschau
             previewContainer.html(`
-                <img src="${path}" style="max-width: 70%; max-height: 70%;" 
+                <img src="${path}" style="max-width: 100%; max-height: 100%;" 
                      onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'preview-placeholder\\'><i class=\\'fas fa-exclamation-triangle\\'></i><span>Bild konnte nicht geladen werden</span></div>'">
             `);
-            html.find('#video-options').hide();
         }
     }
 }
