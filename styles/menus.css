@@ -1,7 +1,7 @@
 /**
  * e9l DSA5/TDE5 Scene Marker - Menu Styles
- * Version: 12.0
- * Description: Styles für Kontextmenüs
+ * Version: 13.3.1
+ * Description: Styles für Kontextmenüs mit Petrol Icons
  */
 
 /* Kontextmenü Styles - Dark Minimal */
@@ -79,10 +79,11 @@
     color: var(--e9l-text-primary);
 }
 
+/* PETROL ICONS */
 .e9l-marker-menu .context-item i {
     width: 14px;
     text-align: center;
-    color: rgba(255, 100, 100, 0.8);
+    color: #17a2b8;  /* Petrol für alle Icons */
     font-size: 11px;
 }
 
@@ -94,9 +95,9 @@
     pointer-events: none;
 }
 
-/* Status-Icons */
+/* Status-Icons (Check-Circle bleibt grün) */
 .e9l-marker-menu .context-item i.fa-check-circle {
-    color: #4CAF50;
+    color: #4CAF50;  /* Grün für Bestätigung */
     margin-left: auto;
     font-size: 10px;
 }

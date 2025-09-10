@@ -1,8 +1,8 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 13.1.0
+ * Version: 13.3.3
  * Date: 2024
- * Description: Marker Actions - Aktionslogik für Marker mit Template-Support
+ * Description: Marker Actions - Optimierte Bild/Video-Anzeige
  */
 
 import { TemplateLoader } from './template-loader.js';
@@ -10,7 +10,7 @@ import { TemplateLoader } from './template-loader.js';
 export class MarkerActions {
     constructor(parent) {
         this.parent = parent;
-        this.version = parent.version || '13.1.0';
+        this.version = parent.version || '13.3.3';
     }
 
     async handleMarkerAction(action, markerData) {
@@ -30,6 +30,10 @@ export class MarkerActions {
                 break;
             case 'request-group-check':
                 this.requestGroupCheck(markerData);
+                break;
+            case 'configure-group-check':
+                // TODO: Implementierung ausstehend
+                ui.notifications.warn("Sammelprobe-Konfiguration in Entwicklung");
                 break;
             case 'execute-script':
                 this.executeScript(markerData);
@@ -130,7 +134,7 @@ export class MarkerActions {
         console.log(`[V${this.version}] Dunkelheits-Config für Marker ${markerId} gespeichert:`, markers[markerId].darknessConfig);
     }
 
-    async saveImageConfig(markerId, imagePath, showAsPopup) {
+    async saveImageConfig(markerId, imagePath, showAsPopup, displaySize, videoOptions) {
         if (!game.user.isGM) return;
         
         const scene = canvas.scene;
@@ -139,10 +143,16 @@ export class MarkerActions {
         const markers = scene.getFlag('e9l-scene-marker', 'markers') || {};
         if (!markers[markerId]) return;
         
-        // Speichere Bild-Konfiguration
+        // Speichere erweiterte Bild/Video-Konfiguration
         markers[markerId].imageConfig = {
             path: imagePath || '',
-            showAsPopup: showAsPopup || false
+            showAsPopup: showAsPopup || false,
+            displaySize: displaySize || 'medium',
+            videoOptions: videoOptions || {
+                autoplay: true,
+                loop: false,
+                muted: true
+            }
         };
         
         // Speichere in Scene
@@ -154,7 +164,7 @@ export class MarkerActions {
             localMarker.data.imageConfig = markers[markerId].imageConfig;
         }
         
-        console.log(`[V${this.version}] Bild-Config für Marker ${markerId} gespeichert:`, markers[markerId].imageConfig);
+        console.log(`[V${this.version}] Bild/Video-Config für Marker ${markerId} gespeichert:`, markers[markerId].imageConfig);
     }
 
     requestCheck(markerData) {
@@ -541,7 +551,7 @@ ChatMessage.create({
 
     showImage(markerData) {
         if (!game.user.isGM) {
-            ui.notifications.error("Nur der GM kann Bilder zeigen!");
+            ui.notifications.error("Nur der GM kann Bilder/Videos zeigen!");
             return;
         }
         
@@ -549,43 +559,143 @@ ChatMessage.create({
         const imageConfig = markerData.imageConfig;
         
         if (!imageConfig?.path) {
-            ui.notifications.warn(`Kein Bild für "${markerName}" konfiguriert`);
+            ui.notifications.warn(`Kein Bild/Video für "${markerName}" konfiguriert`);
             this.configureImage(markerData);
             return;
         }
         
+        // Erkenne ob es ein Video ist
+        const isVideo = /\.(mp4|webm|ogg)$/i.test(imageConfig.path);
+        
         if (imageConfig.showAsPopup) {
-            // Als Popup anzeigen
-            new ImagePopup(imageConfig.path, {
-                title: markerName,
-                shareable: true
-            }).render(true);
+            // Als Popup anzeigen - 50% größer
+            if (isVideo) {
+                // Für Videos: Custom Dialog mit vergrößertem Fenster
+                const videoOptions = imageConfig.videoOptions || {};
+                const content = `
+                    <video src="${imageConfig.path}" 
+                           style="width: 100%; height: auto; display: block;"
+                           ${videoOptions.autoplay ? 'autoplay' : ''}
+                           ${videoOptions.loop ? 'loop' : ''}
+                           ${videoOptions.muted ? 'muted' : ''}
+                           controls>
+                    </video>
+                `;
+                
+                new Dialog({
+                    title: markerName,
+                    content: content,
+                    buttons: {},
+                    default: null
+                }, {
+                    width: 900,  // 50% größer als default (600)
+                    height: 'auto',
+                    resizable: true,
+                    classes: ['e9l-media-popup']
+                }).render(true);
+            } else {
+                // Für Bilder: ImagePopup mit größeren Dimensionen
+                const popup = new ImagePopup(imageConfig.path, {
+                    title: markerName,
+                    shareable: true
+                });
+                
+                // Override die render Methode für größere Dimensionen
+                const originalRender = popup._render;
+                popup._render = async function(force, options) {
+                    await originalRender.call(this, force, options);
+                    // Vergrößere das Fenster nach dem Rendern
+                    const img = new Image();
+                    img.onload = () => {
+                        const maxWidth = window.innerWidth * 0.8;
+                        const maxHeight = window.innerHeight * 0.8;
+                        let width = img.width * 1.5;  // 50% größer
+                        let height = img.height * 1.5;
+                        
+                        // Begrenzen auf Bildschirmgröße
+                        if (width > maxWidth) {
+                            const ratio = maxWidth / width;
+                            width = maxWidth;
+                            height = height * ratio;
+                        }
+                        if (height > maxHeight) {
+                            const ratio = maxHeight / height;
+                            height = maxHeight;
+                            width = width * ratio;
+                        }
+                        
+                        this.setPosition({
+                            width: Math.round(width),
+                            height: Math.round(height)
+                        });
+                    };
+                    img.src = imageConfig.path;
+                };
+                
+                popup.render(true);
+            }
             
-            ui.notifications.info(`Bild-Popup für "${markerName}" geöffnet`);
+            ui.notifications.info(`${isVideo ? 'Video' : 'Bild'}-Popup für "${markerName}" geöffnet`);
         } else {
-            // Im Chat anzeigen
-            ChatMessage.create({
-                content: `
-                    <div class="e9l-marker-image">
-                        <h3>${markerName}</h3>
-                        <img src="${imageConfig.path}" alt="${markerName}" style="max-width: 100%; height: auto; display: block; margin: 10px auto; border-radius: 4px;">
+            // Im Chat anzeigen - OHNE Titel, nur Bild/Video
+            const sizeMap = {
+                'small': '200px',
+                'medium': '400px',
+                'large': '600px',
+                'full': '100%'
+            };
+            const maxWidth = sizeMap[imageConfig.displaySize || 'medium'];
+            
+            let content = '';
+            if (isVideo) {
+                const videoOptions = imageConfig.videoOptions || {};
+                content = `
+                    <div class="e9l-marker-media">
+                        <video src="${imageConfig.path}" 
+                               style="max-width: ${maxWidth}; height: auto; display: block; margin: 0 auto;"
+                               ${videoOptions.autoplay ? 'autoplay' : ''}
+                               ${videoOptions.loop ? 'loop' : ''}
+                               ${videoOptions.muted ? 'muted' : ''}
+                               controls>
+                        </video>
                     </div>
-                `,
+                `;
+            } else {
+                content = `
+                    <div class="e9l-marker-media">
+                        <img src="${imageConfig.path}" 
+                             alt="${markerName}" 
+                             style="max-width: ${maxWidth}; height: auto; display: block; margin: 0 auto; border-radius: 4px;">
+                    </div>
+                `;
+            }
+            
+            ChatMessage.create({
+                content: content,
                 speaker: { alias: "Erzähler" }
             });
             
-            ui.notifications.info(`Bild für "${markerName}" im Chat gezeigt`);
+            ui.notifications.info(`${isVideo ? 'Video' : 'Bild'} im Chat gezeigt`);
         }
     }
 
     async configureImage(markerData) {
         if (!game.user.isGM) {
-            ui.notifications.error("Nur der GM kann Bilder konfigurieren!");
+            ui.notifications.error("Nur der GM kann Bilder/Videos konfigurieren!");
             return;
         }
         
         const markerName = markerData.customName || markerData.label;
-        const imageConfig = markerData.imageConfig || { path: '', showAsPopup: false };
+        const imageConfig = markerData.imageConfig || { 
+            path: '', 
+            showAsPopup: false,
+            displaySize: 'medium',
+            videoOptions: {
+                autoplay: true,
+                loop: false,
+                muted: true
+            }
+        };
         
         // Verstecke Rechtsklick-Menü
         const contextMenu = document.querySelector('.e9l-marker-menu');
@@ -596,7 +706,8 @@ ChatMessage.create({
         // Template-Daten vorbereiten
         const templateData = {
             imagePath: imageConfig.path,
-            showAsPopupChecked: imageConfig.showAsPopup ? 'checked' : ''
+            showAsPopup: imageConfig.showAsPopup,
+            showInChat: !imageConfig.showAsPopup
         };
         
         // Template laden
@@ -606,17 +717,25 @@ ChatMessage.create({
         );
         
         new Dialog({
-            title: `Bild-Konfiguration - ${markerName}`,
+            title: `Bild/Video-Konfiguration - ${markerName}`,
             content: dialogContent,
             buttons: {
                 save: {
                     label: "Speichern",
                     callback: async (html) => {
-                        const imagePath = html.find('#image-path').val();
-                        const showAsPopup = html.find('#show-as-popup').prop('checked');
+                        const imagePath = html.find('#media-path').val();
+                        const displayMode = html.find('#display-mode').val();
+                        const showAsPopup = displayMode === 'popup';
+                        const displaySize = html.find('#display-size').val();
                         
-                        await this.saveImageConfig(markerData.id, imagePath, showAsPopup);
-                        ui.notifications.info(`Bild-Konfiguration für "${markerName}" gespeichert`);
+                        const videoOptions = {
+                            autoplay: html.find('#video-autoplay').prop('checked'),
+                            loop: html.find('#video-loop').prop('checked'),
+                            muted: html.find('#video-muted').prop('checked')
+                        };
+                        
+                        await this.saveImageConfig(markerData.id, imagePath, showAsPopup, displaySize, videoOptions);
+                        ui.notifications.info(`Bild/Video-Konfiguration für "${markerName}" gespeichert`);
                         
                         // Zeige Rechtsklick-Menü wieder
                         const contextMenu = document.querySelector('.e9l-marker-menu');
@@ -639,16 +758,55 @@ ChatMessage.create({
             default: "save",
             render: (html) => {
                 // Aktiviere FilePicker Button
-                html.find('#image-browse').click((event) => {
+                html.find('#media-browse').click((event) => {
                     const fp = new FilePicker({
                         type: 'imagevideo',
-                        current: html.find('#image-path').val(),
+                        current: html.find('#media-path').val(),
                         callback: (path) => {
-                            html.find('#image-path').val(path);
+                            html.find('#media-path').val(path);
+                            this.updateMediaPreview(html, path);
                         }
                     });
                     fp.render(true);
                 });
+                
+                // Clear Button
+                html.find('#media-clear').click(() => {
+                    html.find('#media-path').val('');
+                    this.updateMediaPreview(html, '');
+                });
+                
+                // Update Preview bei manueller Eingabe
+                html.find('#media-path').on('change', (e) => {
+                    this.updateMediaPreview(html, e.target.value);
+                });
+                
+                // Initial Preview
+                if (imageConfig.path) {
+                    this.updateMediaPreview(html, imageConfig.path);
+                }
+                
+                // Zeige/Verstecke Größenoptionen basierend auf Display-Mode
+                html.find('#display-mode').on('change', (e) => {
+                    if (e.target.value === 'popup') {
+                        html.find('#size-options').hide();
+                    } else {
+                        html.find('#size-options').show();
+                    }
+                });
+                
+                // Initial: Verstecke Größe wenn Popup
+                if (imageConfig.showAsPopup) {
+                    html.find('#size-options').hide();
+                }
+                
+                // Setze gespeicherte Werte
+                html.find('#display-size').val(imageConfig.displaySize || 'medium');
+                if (imageConfig.videoOptions) {
+                    html.find('#video-autoplay').prop('checked', imageConfig.videoOptions.autoplay);
+                    html.find('#video-loop').prop('checked', imageConfig.videoOptions.loop);
+                    html.find('#video-muted').prop('checked', imageConfig.videoOptions.muted);
+                }
             },
             close: () => {
                 // Falls Dialog anders geschlossen wird (ESC, X-Button)
@@ -658,5 +816,42 @@ ChatMessage.create({
                 }
             }
         }).render(true);
+    }
+    
+    /**
+     * Aktualisiert die Media-Vorschau im Dialog
+     */
+    updateMediaPreview(html, path) {
+        const previewContainer = html.find('#media-preview');
+        
+        if (!path) {
+            // Zeige Placeholder
+            previewContainer.html(`
+                <div class="preview-placeholder">
+                    <i class="fas fa-image"></i>
+                    <span>Keine Datei ausgewählt</span>
+                </div>
+            `);
+            html.find('#video-options').hide();
+            return;
+        }
+        
+        // Erkenne ob es ein Video ist
+        const isVideo = /\.(mp4|webm|ogg)$/i.test(path);
+        
+        if (isVideo) {
+            // Video-Vorschau - 70% Größe
+            previewContainer.html(`
+                <video src="${path}" style="max-width: 70%; max-height: 70%;" controls muted></video>
+            `);
+            html.find('#video-options').show();
+        } else {
+            // Bild-Vorschau - 70% Größe
+            previewContainer.html(`
+                <img src="${path}" style="max-width: 70%; max-height: 70%;" 
+                     onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'preview-placeholder\\'><i class=\\'fas fa-exclamation-triangle\\'></i><span>Bild konnte nicht geladen werden</span></div>'">
+            `);
+            html.find('#video-options').hide();
+        }
     }
 }

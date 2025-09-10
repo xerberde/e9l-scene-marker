@@ -1,8 +1,8 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 13.1.0
+ * Version: 13.3.1
  * Date: 2024
- * Description: Hauptmodul - Orchestrierung und Initialisierung mit Drag & Drop Support
+ * Description: Hauptmodul - Solid Scroll Icon für Button
  */
 
 import { MarkerManager } from './marker-manager.js';
@@ -19,7 +19,7 @@ class E9LSceneMarker {
         this.isDeleting = false;
         
         // Version aus module.json
-        this.version = '13.1.0';
+        this.version = '13.3.1';
         
         // Module initialisieren
         this.templateLoader = new TemplateLoader();
@@ -80,17 +80,17 @@ class E9LSceneMarker {
     }
 
     addSceneControl(controls) {
-        // Eigene Control-Gruppe mit nur einem Tool
+        // Eigene Control-Gruppe mit nur einem Tool - SOLID SCROLL ICON
         const markerControl = {
             name: "e9l-markers",
             title: "e9l Scene Marker",
-            icon: "fa-solid fa-wand-magic-sparkles",
+            icon: "fa-solid fa-scroll",  // Solid Scroll Icon für Button!
             layer: "controls",
             visible: game.user.isGM,
             tools: [{
                 name: "place-marker",
                 title: "e9l Scene Marker",
-                icon: "fa-solid fa-wand-magic-sparkles",
+                icon: "fa-solid fa-scroll",  // Solid Scroll Icon auch hier!
                 toggle: true,
                 active: false,
                 onClick: (toggle) => this.toggleMarkerMode(toggle)
@@ -147,19 +147,55 @@ class E9LSceneMarker {
         
         if (active) {
             this.events.activateMarkerMode();
+            // Stelle sicher dass Button active ist
+            if (this.controlButton) {
+                this.controlButton.classList.add('active');
+            }
         } else {
             this.events.deactivateMarkerMode();
-            // Stelle sicher dass Button nicht active bleibt
-            if (this.controlButton) {
-                this.controlButton.classList.remove('active');
-            }
+            // Stelle sicher dass Button NICHT active ist
+            this.resetButtonState();
         }
+    }
+    
+    /**
+     * Setzt den Button-State zurück (entfernt active Klasse)
+     * Wird beim Deaktivieren des Marker-Modus aufgerufen
+     */
+    resetButtonState() {
+        // Alle möglichen Button-Referenzen zurücksetzen
+        
+        // 1. Unsere gespeicherte Referenz
+        if (this.controlButton) {
+            this.controlButton.classList.remove('active');
+        }
+        
+        // 2. Direkte DOM-Suche als Fallback
+        const button = document.querySelector('[data-control="e9l-markers"]');
+        if (button) {
+            button.classList.remove('active');
+        }
+        
+        // 3. Auch Sub-Tools falls vorhanden
+        const subTool = document.querySelector('[data-tool="place-marker"]');
+        if (subTool) {
+            subTool.classList.remove('active');
+        }
+        
+        // 4. Setze interne Flag zurück
+        this.isPlacing = false;
+        
+        console.log(`[V${this.version}] Button-State zurückgesetzt`);
     }
 
     onCanvasReady(canvas) {
         if (!game.user.isGM) return;
         
         console.log(`e9l Scene Marker | Version ${this.version} - Canvas ready, lade Marker...`);
+        
+        // Reset Button-State bei Scene-Wechsel
+        this.resetButtonState();
+        
         this.manager.clearMarkers();
         this.manager.loadMarkers();
     }
@@ -185,6 +221,8 @@ class E9LSceneMarker {
         console.log('[DEBUG] Anzahl im DOM:', this.markers.size);
         console.log('[DEBUG] DOM Marker IDs:', Array.from(this.markers.keys()));
         console.log('[DEBUG] isDeleting Flag:', this.isDeleting);
+        console.log('[DEBUG] isPlacing Flag:', this.isPlacing);
+        console.log('[DEBUG] Button active:', this.controlButton?.classList.contains('active'));
         console.log('[DEBUG] User ist GM:', game.user.isGM);
         console.log('[DEBUG] Module Version:', this.version);
         

@@ -1,6 +1,6 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 13.1.0
+ * Version: 13.2.0
  * Date: 2024
  * Description: Marker UI - Rendering und DOM-Manipulation mit Template-Support und Drag & Drop
  */
@@ -10,7 +10,7 @@ import { TemplateLoader } from './template-loader.js';
 export class MarkerUI {
     constructor(parent) {
         this.parent = parent;
-        this.version = parent.version || '13.1.0';
+        this.version = parent.version || '13.2.0';
     }
 
     createMarkerOverlay() {
@@ -103,6 +103,11 @@ export class MarkerUI {
             if (label) label.style.display = 'none';
         });
 
+        // ========================================
+        // DRAG & DROP IMPLEMENTATION (v13.2.0)
+        // ========================================
+        this.setupDragAndDrop(markerElement, markerData);
+
         this.parent.markerOverlay.appendChild(markerElement);
 
         // Erst NACH erfolgreichem DOM-Append zur Map hinzufügen
@@ -127,11 +132,14 @@ export class MarkerUI {
         if (!game.user.isGM) return;
         
         this.parent.markers.forEach(marker => {
-            this.updateMarkerElementPosition(
-                marker.element, 
-                marker.data.x, 
-                marker.data.y
-            );
+            // Überspringe Marker die gerade gedraggt werden
+            if (marker.element && !marker.element.classList.contains('dragging')) {
+                this.updateMarkerElementPosition(
+                    marker.element, 
+                    marker.data.x, 
+                    marker.data.y
+                );
+            }
         });
     }
 
@@ -293,5 +301,148 @@ export class MarkerUI {
             };
             document.addEventListener('click', closeMenu);
         }, 100);
+    }
+
+    /**
+     * Setup Drag & Drop für einen Marker
+     * @param {HTMLElement} markerElement - Das Marker DOM Element
+     * @param {Object} markerData - Die Marker Daten
+     */
+    setupDragAndDrop(markerElement, markerData) {
+        if (!game.user.isGM) return;
+        
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        let startPosition = { x: 0, y: 0 };
+        let currentPosition = { x: 0, y: 0 };
+        
+        const markerBox = markerElement.querySelector('.marker-box');
+        if (!markerBox) return;
+        
+        // Cleanup-Funktion für Event-Listener
+        const cleanup = () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            markerElement.classList.remove('dragging');
+            isDragging = false;
+        };
+        
+        // Speichere Cleanup-Funktion am Element für spätere Verwendung
+        markerElement._dragCleanup = cleanup;
+        
+        const handleMouseDown = (e) => {
+            // Nur linke Maustaste und nur für GMs
+            if (e.button !== 0 || !game.user.isGM) return;
+            
+            // Verhindere Drag bei Rechtsklick-Menü
+            if (document.querySelector('.e9l-marker-menu')) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            isDragging = true;
+            
+            // Speichere Start-Position
+            const rect = markerElement.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            
+            startPosition.x = markerData.x;
+            startPosition.y = markerData.y;
+            
+            // Füge dragging Klasse hinzu
+            markerElement.classList.add('dragging');
+            
+            // Global Mouse Events
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            
+            console.log(`[Drag Start] Marker ${markerData.id} at canvas pos ${Math.round(startPosition.x)}, ${Math.round(startPosition.y)}`);
+        };
+        
+        const handleMouseMove = (e) => {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            
+            // Berechne neue Screen-Position
+            const newScreenX = e.clientX - dragOffset.x;
+            const newScreenY = e.clientY - dragOffset.y;
+            
+            // Update DOM Position sofort für flüssiges Feedback
+            markerElement.style.left = `${newScreenX}px`;
+            markerElement.style.top = `${newScreenY}px`;
+            
+            // Berechne Canvas-Position für späteres Speichern
+            const canvasPoint = canvas.stage.toLocal({ 
+                x: e.clientX - dragOffset.x + 18, // +18 für Marker-Mitte
+                y: e.clientY - dragOffset.y + 18 
+            });
+            
+            currentPosition.x = canvasPoint.x;
+            currentPosition.y = canvasPoint.y;
+        };
+        
+        const handleMouseUp = async (e) => {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            
+            // Finale Canvas-Position berechnen
+            const finalCanvasPoint = canvas.stage.toLocal({ 
+                x: e.clientX - dragOffset.x + 18,
+                y: e.clientY - dragOffset.y + 18
+            });
+            
+            // Update Marker-Daten
+            markerData.x = finalCanvasPoint.x;
+            markerData.y = finalCanvasPoint.y;
+            
+            // Speichere neue Position in Scene
+            await this.saveMarkerPosition(markerData.id, finalCanvasPoint.x, finalCanvasPoint.y);
+            
+            // Update lokale Daten
+            const localMarker = this.parent.markers.get(markerData.id);
+            if (localMarker) {
+                localMarker.data.x = finalCanvasPoint.x;
+                localMarker.data.y = finalCanvasPoint.y;
+            }
+            
+            console.log(`[Drag End] Marker ${markerData.id} moved to canvas pos ${Math.round(finalCanvasPoint.x)}, ${Math.round(finalCanvasPoint.y)}`);
+            
+            // Cleanup
+            cleanup();
+            
+            // Zeige kurz Erfolgs-Feedback
+            ui.notifications.info(`Marker "${markerData.customName || markerData.label}" verschoben`);
+        };
+        
+        // Event-Listener nur auf die Marker-Box
+        markerBox.addEventListener('mousedown', handleMouseDown);
+    }
+    
+    /**
+     * Speichert die neue Position eines Markers
+     * @param {string} markerId - Marker ID
+     * @param {number} x - Neue X-Position
+     * @param {number} y - Neue Y-Position
+     */
+    async saveMarkerPosition(markerId, x, y) {
+        if (!game.user.isGM) return;
+        
+        const scene = canvas.scene;
+        if (!scene) return;
+        
+        const markers = scene.getFlag('e9l-scene-marker', 'markers') || {};
+        if (!markers[markerId]) return;
+        
+        // Update Position
+        markers[markerId].x = x;
+        markers[markerId].y = y;
+        
+        // Speichere in Scene
+        await scene.setFlag('e9l-scene-marker', 'markers', markers);
+        
+        console.log(`[V${this.version}] Position für Marker ${markerId} gespeichert: ${Math.round(x)}, ${Math.round(y)}`);
     }
 }

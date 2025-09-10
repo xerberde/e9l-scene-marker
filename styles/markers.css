@@ -1,103 +1,142 @@
 /**
  * e9l DSA5/TDE5 Scene Marker - Marker Styles
- * Version: 13.2.0
- * Description: Styles für die Marker-Elemente mit Drag-Support und Foundry-Integration
+ * Version: 13.3.1
+ * Description: Kleinere Marker mit Petrol Theme und dunkelgrauem Rahmen
  */
 
-/* DOM Marker Styles - Dunkles Quadrat mit abgerundeten Ecken */
+/* DOM Marker Styles - 15% kleiner als Scene Controls */
 .e9l-scene-marker-dom {
     position: absolute;
     pointer-events: all !important;
     will-change: transform;
     cursor: pointer;
-    opacity: 0.6;  /* 40% Transparenz */
-    transition: opacity var(--e9l-transition-normal);
+    transition: all 0.15s ease;
 }
 
+/* Marker Box - 34x34px mit dunkelgrauem Rahmen */
 .e9l-scene-marker-dom .marker-box {
-    width: 36px;
-    height: 36px;
-    background: rgba(0, 0, 0, 0.5);  /* Wie Foundry Controls */
-    border: 1px solid var(--color-border-dark-tertiary);  /* Foundry Dark Border */
-    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    
+    /* Foundry-ähnliche Styles */
+    background: rgba(0, 0, 0, 0.5);
+    background-origin: padding-box;
+    border: 1px solid #333;  /* Dunkelgrau statt Schwarz */
+    border-radius: 4px;
+    
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 
-        var(--e9l-shadow-sm),
-        var(--e9l-shadow-inset);
-    transition: all var(--e9l-transition-normal);
+    
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    margin: 0;
+    padding: 0;
+    
+    transition: border 0.15s ease, box-shadow 0.15s ease;
     pointer-events: all !important;
 }
 
+/* Icon - Proportional kleiner */
 .e9l-scene-marker-dom .marker-box i {
-    font-size: 18px;
-    color: var(--color-text-light-highlight);  /* Foundry Light Text */
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
-    transition: all var(--e9l-transition-normal);
+    width: 100%;
+    height: 34px;
+    line-height: 34px;
+    
+    font-size: 20px;  /* 15% kleiner als 24px */
+    text-align: center;
+    
+    /* Graue Farbe wie Controls */
+    color: #BBB;
+    text-shadow: 1px 1px 2px #000;
+    
+    margin: 0;
+    padding: 0;
+    display: block;
+    
+    transition: color 0.15s ease;
 }
 
-/* Marker Label - Zeigt sich beim Hovern */
+/* Marker Label */
 .e9l-scene-marker-dom .marker-label {
     position: absolute;
-    top: 40px;
+    top: 38px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid var(--color-border-dark-tertiary);
-    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid #17a2b8;  /* Petrol Border für Label */
+    border-radius: 3px;
     padding: 3px 8px;
     font-size: 11px;
-    font-family: var(--font-primary);
-    color: var(--color-text-light-highlight);
+    font-family: "Signika", "Palatino Linotype", serif;
+    color: #FFF;
     white-space: nowrap;
     pointer-events: none;
-    box-shadow: var(--e9l-shadow-md);
+    box-shadow: 0 0 8px rgba(23, 162, 184, 0.3);
     z-index: 31;
-    animation: fadeIn var(--e9l-transition-normal);
+    opacity: 0;
+    transition: opacity 0.15s ease;
 }
 
-/* Hover-Effekt - Orange wie xerbers-dsa5-roller */
+.e9l-scene-marker-dom:hover .marker-label,
+.e9l-scene-marker-dom.hover .marker-label {
+    opacity: 1;
+}
+
+/* Hover State - Petrol/Türkis Theme */
 .e9l-scene-marker-dom:hover .marker-box,
 .e9l-scene-marker-dom.hover .marker-box {
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid red;  /* Rot für top/left/right */
-    border-bottom: 1px solid #ff6400;  /* Orange für bottom */
-    box-shadow: 0 0 10px #ff6400;  /* Orange Glow */
+    background: rgba(0, 0, 0, 0.5);
+    
+    /* Petrol/Türkis Border */
+    border: 1px solid #17a2b8;  /* Bootstrap Info/Petrol */
+    border-bottom: 1px solid #20c997;  /* Helleres Türkis unten */
+    
+    /* Petrol Glow */
+    box-shadow: 0 0 10px rgba(23, 162, 184, 0.8);
 }
 
-.e9l-scene-marker-dom:hover,
-.e9l-scene-marker-dom.hover {
-    opacity: 1;  /* Volle Sichtbarkeit bei Hover */
-}
-
+/* Icon bleibt grau bei Hover */
 .e9l-scene-marker-dom:hover .marker-box i,
 .e9l-scene-marker-dom.hover .marker-box i {
-    color: #FFF;  /* Weiß bei Hover wie xerbers-dsa5-roller */
+    color: #BBB;
 }
 
-/* Dragging-State - Marker wird verschoben */
+/* Active/Selected State */
+.e9l-scene-marker-dom.active .marker-box,
+.e9l-scene-marker-dom.selected .marker-box {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #17a2b8;
+    border-bottom: 1px solid #20c997;
+    box-shadow: 0 0 12px rgba(23, 162, 184, 0.9);
+}
+
+.e9l-scene-marker-dom.active .marker-box i,
+.e9l-scene-marker-dom.selected .marker-box i {
+    color: #FFF;  /* Weiß bei Active */
+}
+
+/* Dragging State - Verstärktes Petrol */
 .e9l-scene-marker-dom.dragging {
     cursor: move !important;
-    opacity: 0.8 !important;
     z-index: 1000 !important;
-    transition: none !important; /* Keine Transition während Dragging */
+    transition: none !important;
 }
 
 .e9l-scene-marker-dom.dragging .marker-box {
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid red;  /* Rot beim Ziehen */
-    border-bottom: 1px solid #ff6400;  /* Orange Bottom */
+    /* Starker Petrol Glow beim Dragging */
+    border: 1px solid #17a2b8;
+    border-bottom: 1px solid #20c997;
     box-shadow: 
-        0 0 20px #ff6400,  /* Stärkerer Orange Glow beim Ziehen */
+        0 0 20px rgba(23, 162, 184, 1),
+        0 0 40px rgba(32, 201, 151, 0.4),
         0 5px 15px rgba(0, 0, 0, 0.8);
-    transform: scale(1.1);
+    transform: scale(1.05);
     transition: none !important;
 }
 
 .e9l-scene-marker-dom.dragging .marker-box i {
-    color: #ff6400;  /* Orange Icon beim Ziehen */
-    animation: pulse 1s infinite;
+    color: #FFF;  /* Weiß beim Dragging */
+    text-shadow: 0 0 5px rgba(23, 162, 184, 0.8);
 }
 
 /* Prevent text selection during drag */
@@ -107,4 +146,23 @@
     -webkit-user-select: none !important;
     -moz-user-select: none !important;
     -ms-user-select: none !important;
+}
+
+/* Spawn Animation beim Erstellen */
+.e9l-scene-marker-dom.new-marker {
+    animation: marker-spawn 0.3s ease-out;
+}
+
+@keyframes marker-spawn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }

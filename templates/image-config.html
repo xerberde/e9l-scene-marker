@@ -1,31 +1,90 @@
-<div class="image-config-form">
+<div class="e9l-image-config-form">
     <div class="form-group">
-        <label for="image-path">Bild-Pfad:</label>
-        <div style="display: flex; gap: 5px;">
+        <label for="media-path">Bild/Video-Pfad:</label>
+        <div class="input-group">
             <input type="text" 
-                   id="image-path" 
+                   id="media-path" 
+                   class="media-path-input"
                    value="{{imagePath}}" 
-                   placeholder="Pfad zum Bild..." 
-                   style="flex: 1;">
+                   placeholder="Pfad zum Bild oder Video..."
+                   data-tooltip="Unterstützte Formate: JPG, PNG, GIF, WebP, MP4, WebM">
             <button type="button" 
-                    id="image-browse" 
-                    class="file-picker" 
-                    data-type="imagevideo" 
-                    data-target="#image-path"
-                    title="Bild auswählen">
-                <i class="fas fa-file-import"></i>
+                    id="media-browse" 
+                    class="file-picker-btn"
+                    title="Datei auswählen">
+                <i class="fas fa-folder-open"></i>
+            </button>
+            <button type="button"
+                    id="media-clear"
+                    class="clear-btn"
+                    title="Pfad löschen">
+                <i class="fas fa-times"></i>
             </button>
         </div>
     </div>
-    <div class="form-group">
-        <label>
-            <input type="checkbox" 
-                   id="show-as-popup" 
-                   {{showAsPopupChecked}}>
-            Als Popup anzeigen (sonst im Chat)
-        </label>
+    
+    <div class="form-group preview-group">
+        <label>Vorschau:</label>
+        <div class="media-preview" id="media-preview">
+            <div class="preview-placeholder">
+                <i class="fas fa-image"></i>
+                <span>Keine Datei ausgewählt</span>
+            </div>
+        </div>
     </div>
-    <div class="form-info" style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 3px;">
-        <small><i class="fas fa-info-circle"></i> Das Bild wird allen Spielern angezeigt.</small>
+    
+    <div class="form-group">
+        <label>Anzeigeoptionen:</label>
+        <div class="option-group">
+            <label class="checkbox-label">
+                <input type="checkbox" 
+                       id="show-as-popup" 
+                       {{showAsPopupChecked}}>
+                <span>Als Popup anzeigen</span>
+            </label>
+            <small class="help-text">Wenn deaktiviert, wird das Bild/Video im Chat angezeigt</small>
+        </div>
+    </div>
+    
+    <div class="form-group size-options" id="size-options">
+        <label for="display-size">Anzeigegröße:</label>
+        <select id="display-size" class="size-select">
+            <option value="small">Klein (200px)</option>
+            <option value="medium" selected>Mittel (400px)</option>
+            <option value="large">Groß (600px)</option>
+            <option value="full">Original</option>
+        </select>
+    </div>
+    
+    <div class="form-group video-options" id="video-options" style="display: none;">
+        <label>Video-Optionen:</label>
+        <div class="option-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="video-autoplay" checked>
+                <span>Automatisch abspielen</span>
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="video-loop">
+                <span>Wiederholen</span>
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="video-muted" checked>
+                <span>Stumm starten</span>
+            </label>
+        </div>
+    </div>
+    
+    <div class="form-info">
+        <i class="fas fa-info-circle"></i>
+        <div>
+            <p><strong>Unterstützte Formate:</strong></p>
+            <ul>
+                <li>Bilder: JPG, PNG, GIF, WebP</li>
+                <li>Videos: MP4, WebM</li>
+            </ul>
+            <p class="warning-text">
+                <i class="fas fa-eye"></i> Das Bild/Video wird allen Spielern angezeigt
+            </p>
+        </div>
     </div>
 </div>

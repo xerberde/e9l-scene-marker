@@ -1,51 +1,241 @@
 /**
  * e9l DSA5/TDE5 Scene Marker - Dialog Styles
- * Version: 12.0
- * Description: Styles für Dialoge und Buttons
+ * Version: 13.3.2
+ * Description: Verbesserte Dialog-Styles mit Bild/Video-Konfiguration
  */
 
 /* ============================================ */
-/* SCRIPT-DIALOG BUTTONS - HORIZONTAL LAYOUT   */
+/* ALLGEMEINE DIALOG STYLES                    */
 /* ============================================ */
 
 /* Script-Dialog - Nutze Foundry Default Buttons */
 .e9l-script-dialog .dialog-buttons {
-    /* Nur Layout anpassen, keine Style-Overrides */
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     gap: 4px !important;
 }
 
-/* Reihenfolge der Buttons */
-.e9l-script-dialog .dialog-buttons button[data-button="validate"] { 
-    order: 1;
+/* Button-Reihenfolge */
+.e9l-script-dialog .dialog-buttons button[data-button="validate"] { order: 1; }
+.e9l-script-dialog .dialog-buttons button[data-button="execute"] { order: 2; }
+.e9l-script-dialog .dialog-buttons button[data-button="save"] { order: 3; }
+.e9l-script-dialog .dialog-buttons button[data-button="cancel"] { order: 4; }
+
+/* ============================================ */
+/* BILD/VIDEO KONFIGURATION                    */
+/* ============================================ */
+
+.e9l-image-config-form {
+    padding: var(--e9l-spacing-sm);
 }
 
-.e9l-script-dialog .dialog-buttons button[data-button="execute"] { 
-    order: 2;
+.e9l-image-config-form .form-group {
+    margin-bottom: var(--e9l-spacing-lg);
 }
 
-.e9l-script-dialog .dialog-buttons button[data-button="save"] { 
-    order: 3;
+.e9l-image-config-form label {
+    display: block;
+    margin-bottom: var(--e9l-spacing-xs);
+    font-weight: 600;
+    color: var(--e9l-text-primary);
+    font-size: 12px;
 }
 
-.e9l-script-dialog .dialog-buttons button[data-button="cancel"] { 
-    order: 4;
+/* Input Gruppe mit Buttons */
+.e9l-image-config-form .input-group {
+    display: flex;
+    gap: 4px;
+    align-items: stretch;
 }
 
-/* Fallback mit maximaler Spezifität */
-.app.dialog.e9l-script-dialog .dialog-content + .dialog-buttons,
-body .e9l-script-dialog .dialog-buttons {
-    display: flex !important;
-    flex-direction: row !important;
+.e9l-image-config-form .media-path-input {
+    flex: 1;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px 0 0 3px;
+    color: var(--e9l-text-primary);
+    font-size: 12px;
+}
+
+.e9l-image-config-form .media-path-input:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #17a2b8;
+    outline: none;
+}
+
+/* Buttons in der Input-Gruppe */
+.e9l-image-config-form .file-picker-btn,
+.e9l-image-config-form .clear-btn {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--e9l-text-secondary);
+    cursor: pointer;
+    transition: all var(--e9l-transition-fast);
+}
+
+.e9l-image-config-form .file-picker-btn {
+    border-radius: 0;
+    border-left: none;
+}
+
+.e9l-image-config-form .clear-btn {
+    border-radius: 0 3px 3px 0;
+    border-left: none;
+}
+
+.e9l-image-config-form .file-picker-btn:hover,
+.e9l-image-config-form .clear-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #17a2b8;
+}
+
+/* Media Vorschau */
+.e9l-image-config-form .media-preview {
+    min-height: 150px;
+    max-height: 300px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.e9l-image-config-form .preview-placeholder {
+    text-align: center;
+    color: var(--e9l-text-muted);
+    padding: var(--e9l-spacing-lg);
+}
+
+.e9l-image-config-form .preview-placeholder i {
+    font-size: 48px;
+    display: block;
+    margin-bottom: var(--e9l-spacing-sm);
+    opacity: 0.3;
+}
+
+.e9l-image-config-form .preview-placeholder span {
+    font-size: 11px;
+}
+
+/* Vorschau-Bild */
+.e9l-image-config-form .media-preview img,
+.e9l-image-config-form .media-preview video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Option Groups */
+.e9l-image-config-form .option-group {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    padding: var(--e9l-spacing-sm);
+}
+
+/* Checkbox Styling */
+.e9l-image-config-form .checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: var(--e9l-spacing-xs);
+    font-size: 12px;
+    color: var(--e9l-text-secondary);
+}
+
+.e9l-image-config-form .checkbox-label:last-child {
+    margin-bottom: 0;
+}
+
+.e9l-image-config-form .checkbox-label input[type="checkbox"] {
+    margin-right: var(--e9l-spacing-sm);
+    cursor: pointer;
+}
+
+.e9l-image-config-form .checkbox-label span {
+    user-select: none;
+}
+
+.e9l-image-config-form .checkbox-label:hover span {
+    color: var(--e9l-text-primary);
+}
+
+/* Help Text */
+.e9l-image-config-form .help-text {
+    display: block;
+    margin-top: var(--e9l-spacing-xs);
+    font-size: 10px;
+    color: var(--e9l-text-muted);
+    font-style: italic;
+}
+
+/* Size Select */
+.e9l-image-config-form .size-select {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    color: var(--e9l-text-primary);
+    font-size: 12px;
+}
+
+.e9l-image-config-form .size-select:focus {
+    border-color: #17a2b8;
+    outline: none;
+}
+
+/* Info Box */
+.e9l-image-config-form .form-info {
+    margin-top: var(--e9l-spacing-lg);
+    padding: var(--e9l-spacing-md);
+    background: rgba(23, 162, 184, 0.1);
+    border: 1px solid #17a2b8;
+    border-radius: 4px;
+    display: flex;
+    gap: var(--e9l-spacing-md);
+    font-size: 11px;
+}
+
+.e9l-image-config-form .form-info > i {
+    color: #17a2b8;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.e9l-image-config-form .form-info ul {
+    margin: var(--e9l-spacing-xs) 0;
+    padding-left: var(--e9l-spacing-lg);
+}
+
+.e9l-image-config-form .form-info p {
+    margin: var(--e9l-spacing-xs) 0;
+}
+
+.e9l-image-config-form .warning-text {
+    color: #ffc107;
+    font-weight: 600;
+    margin-top: var(--e9l-spacing-sm) !important;
+}
+
+.e9l-image-config-form .warning-text i {
+    margin-right: var(--e9l-spacing-xs);
+}
+
+/* Video Options - Spezial */
+.e9l-image-config-form .video-options {
+    transition: all var(--e9l-transition-normal);
 }
 
 /* ============================================ */
-/* KONFIGURATIONSDIALOGE                       */
+/* DUNKELHEITS-KONFIGURATION                   */
 /* ============================================ */
 
-/* Dunkelheits-Konfiguration Form Styling */
 .darkness-config-form .form-group {
     margin-bottom: var(--e9l-spacing-lg) !important;
     display: flex;
@@ -68,22 +258,7 @@ body .e9l-script-dialog .dialog-buttons {
     color: var(--e9l-text-primary);
 }
 
-/* Bild-Konfiguration Dialog */
-.image-config-form .form-group {
-    margin-bottom: var(--e9l-spacing-md);
-}
-
-.image-config-form .file-picker {
-    padding: 6px 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 3px;
-    color: var(--e9l-text-primary);
-    cursor: pointer;
-    transition: all var(--e9l-transition-normal);
-}
-
-.image-config-form .file-picker:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.3);
+.darkness-config-form input[type="number"]:focus {
+    border-color: #17a2b8;
+    outline: none;
 }

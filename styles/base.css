@@ -1,11 +1,11 @@
 /**
  * e9l DSA5/TDE5 Scene Marker - Base Styles
- * Version: 12.0
- * Description: CSS-Variablen und grundlegende Styles
+ * Version: 13.2.1
+ * Description: CSS-Variablen und grundlegende Styles - NATIVE FOUNDRY THEME
  */
 
 :root {
-    /* Farben - Dark Theme */
+    /* Modul-eigene Farben für Dialoge/Menüs */
     --e9l-bg-primary: linear-gradient(135deg, #1a1a1d 0%, #0d0d0f 100%);
     --e9l-bg-secondary: linear-gradient(135deg, #202024 0%, #101012 100%);
     --e9l-border-color: rgba(255, 255, 255, 0.1);
@@ -14,7 +14,7 @@
     --e9l-text-secondary: rgba(255, 255, 255, 0.7);
     --e9l-text-muted: rgba(255, 255, 255, 0.4);
     
-    /* Button-Farben */
+    /* Button-Farben für Dialoge */
     --e9l-btn-validate: linear-gradient(135deg, #2a3f5f 0%, #1a2f4f 100%);
     --e9l-btn-execute: linear-gradient(135deg, #2f5f2f 0%, #1f4f1f 100%);
     --e9l-btn-save: linear-gradient(135deg, #5f4f2f 0%, #4f3f1f 100%);
@@ -49,26 +49,22 @@
     z-index: 30;
 }
 
+/* ============================================ */
+/*    SCENE CONTROL BUTTON - NATIVE FOUNDRY    */
+/* ============================================ */
 
-/* Scene Control Button - Normaler Zustand */
-.scene-control[data-control="e9l-markers"]:not(.active) {
-    border: 1px solid transparent !important;
-    box-shadow: none !important;
-}
+/* 
+ * KEINE eigenen Styles für den Button!
+ * Foundry's native CSS kümmert sich um alles.
+ * Der Button wird automatisch richtig gestylt durch:
+ * - .scene-control (normale Styles)
+ * - .scene-control:hover (Hover-Effekt)
+ * - .scene-control.active (Aktiv-Zustand)
+ * 
+ * Wir fügen NICHTS hinzu, was das native Verhalten ändert.
+ */
 
-/* Scene Control Button anpassen wenn aktiv */
-.scene-control[data-control="e9l-markers"].active,
-.scene-control[data-control="e9l-markers"] .control-tool.active {
-    border: 1px solid var(--color-border-highlight-alt) !important;
-    border-bottom: 1px solid var(--color-border-highlight) !important;
-    box-shadow: 0 0 10px var(--color-shadow-highlight) !important;
-}
-
-.scene-control[data-control="e9l-markers"]:hover {
-    border-color: var(--color-border-light-highlight) !important;
-}
-
-/* Crosshair Cursor */
+/* Crosshair Cursor - Das einzige was wir wirklich brauchen */
 body[style*="cursor: crosshair"] {
     cursor: crosshair !important;
 }

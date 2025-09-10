@@ -1,14 +1,14 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 13.1.0
+ * Version: 13.3.1
  * Date: 2024
- * Description: Marker Manager - CRUD-Operationen für Marker
+ * Description: Marker Manager - CRUD-Operationen mit Solid Scroll Icon
  */
 
 export class MarkerManager {
     constructor(parent) {
         this.parent = parent;
-        this.version = parent.version || '13.1.0';
+        this.version = parent.version || '13.3.1';
     }
 
     async createMarker(x, y) {
@@ -25,7 +25,7 @@ export class MarkerManager {
             y: y,
             label: `Marker ${this.parent.markers.size + 1}`,
             visible: true,
-            icon: 'fa-solid fa-wand-magic-sparkles'
+            icon: 'fa-solid fa-scroll'  // Solid Scroll Icon!
         };
 
         // NUR speichern - KEIN direktes Rendering!
@@ -92,9 +92,12 @@ export class MarkerManager {
         // Füge nur neue Marker hinzu
         let newMarkersCount = 0;
         Object.values(savedMarkers).forEach(markerData => {
-            // Stelle sicher dass Icon korrekt ist
-            if (markerData.icon !== 'fa-solid fa-wand-magic-sparkles') {
-                markerData.icon = 'fa-solid fa-wand-magic-sparkles';
+            // Update alte Icons auf neues Solid Scroll Icon
+            if (!markerData.icon || 
+                markerData.icon === 'fa-solid fa-wand-magic-sparkles' || 
+                markerData.icon === 'fa-solid fa-paperclip' ||
+                markerData.icon === 'fa-light fa-scroll') {
+                markerData.icon = 'fa-solid fa-scroll';
             }
             
             // NUR rendern wenn Marker noch nicht existiert

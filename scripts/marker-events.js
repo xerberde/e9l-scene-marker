@@ -1,14 +1,14 @@
 /**
  * e9l DSA5/TDE5 Scene Marker Module for Foundry VTT v12
- * Version: 13.1.0
+ * Version: 13.2.2
  * Date: 2024
- * Description: Marker Events - Event-Handler für Marker-Interaktionen
+ * Description: Marker Events - Event-Handler mit Button-Fix
  */
 
 export class MarkerEvents {
     constructor(parent) {
         this.parent = parent;
-        this.version = parent.version || '13.1.0';
+        this.version = parent.version || '13.2.2';
         
         // Bind event handlers
         this.handleCanvasClick = this.handleCanvasClick.bind(this);
@@ -32,29 +32,30 @@ export class MarkerEvents {
         // Nur GMs können den Marker-Modus deaktivieren
         if (!game.user.isGM) return;
         
+        // Cursor zurücksetzen
         document.body.style.cursor = 'default';
+        
+        // Event-Listener entfernen
         canvas.stage.off('pointerdown', this.handleCanvasClick);
         canvas.stage.off('rightdown', this.handleRightClick);
         
-        // Finde unseren Button in den Token-Controls
-        const tokenControls = ui.controls.controls.find(c => c.name === "token");
-        if (tokenControls) {
-            const tool = tokenControls.tools.find(t => t.name === "e9l-scene-marker");
-            if (tool) {
-                tool.active = false;
-                ui.controls.render();
-            }
-        }
+        // WICHTIG: Button-State über parent zurücksetzen
+        this.parent.resetButtonState();
         
+        // Flag zurücksetzen
         this.parent.isPlacing = false;
+        
+        // Notification
         ui.notifications.info("Marker-Modus deaktiviert.");
+        
+        console.log(`[V${this.version}] Marker-Modus deaktiviert, Button-State zurückgesetzt`);
     }
 
     handleCanvasClick(event) {
         // Zusätzlicher GM-Check für Sicherheit
         if (!game.user.isGM) return;
         if (!this.parent.isPlacing) return;
-        if (event.data.button === 2) return;
+        if (event.data.button === 2) return;  // Rechtsklick ignorieren
         
         event.stopPropagation();
         const position = event.data.getLocalPosition(canvas.stage);
@@ -73,6 +74,11 @@ export class MarkerEvents {
         
         if (this.parent.isPlacing) {
             event.stopPropagation();
+            event.preventDefault();
+            
+            console.log(`[V${this.version}] Rechtsklick erkannt - deaktiviere Marker-Modus`);
+            
+            // Deaktiviere Marker-Modus (ruft resetButtonState auf)
             this.deactivateMarkerMode();
         }
     }
